@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+      <!-- Bootstrap Style -->
+    <link
+    rel="stylesheet"
+    href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+    crossorigin="anonymous"
+  />
+    <!--Font Awesome-->
+    <script src="https://kit.fontawesome.com/6fdd69e128.js" crossorigin="anonymous"></script>
+    <!-- Custon CSS -->
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/board.css"/>
+    <link rel="stylesheet" href="css/verticalSlideButtons.css"/>
+
+    <title>Shiro 城</title>
+  </head>
+  <body>
+
+    
+      <div id="alertContainer"></div>
+    <!--Side menu-->
+    <div id="side-menu" class="side-nav">
+        <a href="#" class="btn-close" id="closeSlideButton">&times;</a>
+        <div id="currentPlayerData" class="dashboardData">
+          
+        </div>
+        <div id="selectedItemData" class="dashboardData"></div>
+        <!-- <a href="#">Home</a>
+        <a href="#">About</a>
+        <a href="#">Contact</a> -->
+    </div>
+    
+
+    <div id="general">
+        <!--Alert-->
+        
+
+     <!--Top navbar-->
+     <nav class="myNavbar" id="topNavbar">
+        <!-- The following span will contain the icon that activates the sidemenu-->
+        <span class="open-slide"">
+            <a href="#" id="openSlideButton">
+                <svg width="30" height="30">
+                    <path d="M0,5, 30, 5" stroke="#2d3436" stroke-width="5"/>
+                    <path d="M0, 14 30, 14" stroke="#2d3436" stroke-width="5"/>
+                    <path d="M0, 23 30, 23" stroke="#2d3436" stroke-width="5"/>
+                </svg>
+            </a>
+        </span>
+        <ul class="myNavbar-nav">
+            <li><a href="#">Contact</a></li>
+            <li><a href="#">Manual</a></li>
+            <li><a href="#" id="docButton">Docs</a></li>
+         
+        </ul>
+      </nav>
+
+  
+
+    <!-- Main content -->
+    <div id="main" class="">
+
+
+
+       
+    
+
+      <h1>Content</h1>
+
+      <div>
+      <button id="playGameButton" class="slideButtonY" ></button>
+      </div>
+      <div id="gameSetupForm"></div>
+      <div>
+      <button id="startGameButton" class="slideButtonY"></button>
+     </div>
+       <!-- Tooltip -->
+      <!-- <div class="tooltip">Hover over me
+          span class="tooltiptext">Tooltip text</span>
+      </div> -->
+
+      <!-- Grid -->
+      
+      <div class="gridWrapper">
+      <div class="grid-container" id="gameGrid">
+          <div class="grid-item castleItem" itemType="castleItem" cellNumber ="1"></div>
+          <div class="grid-item" cellNumber="2">2</div>
+          <div class="grid-item" cellNumber="3">3</div>  
+          <div class="grid-item" cellNumber="4">4</div>
+          <div class="grid-item" cellNumber="5">5</div>
+          <div class="grid-item" cellNumber="6">6</div>  
+          <div class="grid-item" cellNumber="7">7</div>
+          <div class="grid-item" cellNumber="8">8</div>
+          <div class="grid-item" cellNumber="9">9</div>
+          <div class="grid-item castleItem" itemType="castleItem" cellNumber ="10"></div>
+          <div class="grid-item" cellNumber="11">1</div>
+          <div class="grid-item" cellNumber="12">2</div>
+          <div class="grid-item" cellNumber="13">3</div>  
+          <div class="grid-item" cellNumber="14">4</div>
+          <div class="grid-item" cellNumber="15">5</div>
+          <div class="grid-item" cellNumber="16">6</div>  
+          <div class="grid-item" cellNumber="17">7</div>
+          <div class="grid-item" cellNumber="18">8</div>
+          <div class="grid-item" cellNumber="19">9</div>
+          <div class="grid-item" cellNumber="20">10</div>
+          <div class="grid-item" cellNumber="21">1</div>
+          <div class="grid-item" cellNumber="22">2</div>
+          <div class="grid-item" cellNumber="23">3</div>  
+          <div class="grid-item" cellNumber="24">4</div>
+          <div class="grid-item" cellNumber="25">5</div>
+          <div class="grid-item" cellNumber="26">6</div>  
+          <div class="grid-item" cellNumber="27">7</div>
+          <div class="grid-item" cellNumber="28">8</div>
+          <div class="grid-item" cellNumber="29">9</div>
+          <div class="grid-item" cellNumber="30">10</div>
+          <div class="grid-item" cellNumber="31">1</div>
+          <div class="grid-item" cellNumber="32">2</div>
+          <div class="grid-item" cellNumber="33">3</div>  
+          <div class="grid-item" cellNumber="34">4</div>
+          <div class="grid-item" cellNumber="35">5</div>
+          <div class="grid-item" cellNumber="36">6</div>  
+          <div class="grid-item" cellNumber="37">7</div>
+          <div class="grid-item" cellNumber="38">8</div>
+          <div class="grid-item" cellNumber="39">9</div>
+          <div class="grid-item" cellNumber="40">10</div>
+          <div class="grid-item" cellNumber="41">1</div>
+          <div class="grid-item" cellNumber="42">2</div>
+          <div class="grid-item" cellNumber="43">3</div>  
+          <div class="grid-item" cellNumber="44">4</div>
+          <div class="grid-item" cellNumber="45">5</div>
+          <div class="grid-item" cellNumber="46">6</div>  
+          <div class="grid-item" cellNumber="47">7</div>
+          <div class="grid-item" cellNumber="48">8</div>
+          <div class="grid-item" cellNumber="49">9</div>
+          <div class="grid-item" cellNumber="50">10</div>
+          <div class="grid-item" cellNumber="51">1</div>
+          <div class="grid-item" cellNumber="52">2</div>
+          <div class="grid-item" cellNumber="53">3</div>  
+          <div class="grid-item" cellNumber="54">4</div>
+          <div class="grid-item" cellNumber="55">5</div>
+          <div class="grid-item" cellNumber="56">6</div>  
+          <div class="grid-item" cellNumber="57">7</div>
+          <div class="grid-item" cellNumber="58">8</div>
+          <div class="grid-item" cellNumber="59">9</div>
+          <div class="grid-item" cellNumber="60">10</div>
+          <div class="grid-item" cellNumber="61">1</div>
+          <div class="grid-item" cellNumber="62">2</div>
+          <div class="grid-item" cellNumber="63">3</div>  
+          <div class="grid-item" cellNumber="64">4</div>
+          <div class="grid-item" cellNumber="65">5</div>
+          <div class="grid-item" cellNumber="66">6</div>  
+          <div class="grid-item" cellNumber="67">7</div>
+          <div class="grid-item" cellNumber="68">8</div>
+          <div class="grid-item" cellNumber="69">9</div>
+          <div class="grid-item" cellNumber="70">10</div>
+          <div class="grid-item" cellNumber="71">1</div>
+          <div class="grid-item" cellNumber="72">2</div>
+          <div class="grid-item" cellNumber="73">3</div>  
+          <div class="grid-item" cellNumber="74">4</div>
+          <div class="grid-item" cellNumber="75">5</div>
+          <div class="grid-item" cellNumber="76">6</div>  
+          <div class="grid-item" cellNumber="77">7</div>
+          <div class="grid-item" cellNumber="78">8</div>
+          <div class="grid-item" cellNumber="79">9</div>
+          <div class="grid-item" cellNumber="80">10</div>
+          <div class="grid-item" cellNumber="81">1</div>
+          <div class="grid-item" cellNumber="82">2</div>
+          <div class="grid-item" cellNumber="83">3</div>  
+          <div class="grid-item" cellNumber="84">4</div>
+          <div class="grid-item" cellNumber="85">5</div>
+          <div class="grid-item" cellNumber="86">6</div>  
+          <div class="grid-item" cellNumber="87">7</div>
+          <div class="grid-item" cellNumber="88">8</div>
+          <div class="grid-item" cellNumber="89">9</div>
+          <div class="grid-item" cellNumber="90">10</div>
+          <div class="grid-item castleItem" itemType="castleItem" cellNumber="91"></div>
+          <div class="grid-item" cellNumber="92">2</div>
+          <div class="grid-item" cellNumber="93">3</div>  
+          <div class="grid-item" cellNumber="94">4</div>
+          <div class="grid-item" cellNumber="95">5</div>
+          <div class="grid-item" cellNumber="96">6</div>  
+          <div class="grid-item" cellNumber="97">7</div>
+          <div class="grid-item" cellNumber="98">8</div>
+          <div class="grid-item" cellNumber="99">9</div>
+          <div class="grid-item castleItem" itemType="castleItem" cellNumber="100"></div>
+        </div> 
+      </div>
+    </div>
+          <!-- //Grid -->
+  
+	<!-- *************** MP:Bootstrap Modal *************** -->
+	<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+		aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 id="modalTitle" class="modal-title" id="exampleModalLabel">Modal title</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body" id="modalBody">
+
+					...
+				</div>
+				<div class="modal-footer" id="modalFooter">
+    
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- *************** END MP:Bootstrap Modal *************** -->
+
+  <!-- Bootstrap JS -->
+    <script
+    src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"
+    ></script>
+    <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"
+    ></script>
+    <script
+    src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"
+    ></script>
+
+    <!-- Custom Scripts-->
+
+   <!----- DESIGN PATTERN: Abstract Factory ----->
+    <!-- Products -->
+    <script src="DesignPatterns/AbstractFactory/Products/AbstractProduct.js"></script>
+    <script src="DesignPatterns/AbstractFactory/Products/Archer.js"></script>
+    <script src="DesignPatterns/AbstractFactory/Products/Assassin.js"></script>
+    <script src="DesignPatterns/AbstractFactory/Products/Berserker.js"></script>
+    <script src="DesignPatterns/AbstractFactory/Products/Castle.js"></script>
+    <script src="DesignPatterns/AbstractFactory/Products/Catapult.js"></script>
+    <script src="DesignPatterns/AbstractFactory/Products/Corssbow.js"></script>
+    <script src="DesignPatterns/AbstractFactory/Products/Horseman.js"></script>
+    <script src="DesignPatterns/AbstractFactory/Products/Mage.js"></script>
+    <script src="DesignPatterns/AbstractFactory/Products/Samurai.js"></script>
+    <script src="DesignPatterns/AbstractFactory/Products/Spy.js"></script>
+    <!-- Factories -->
+    <script src="DesignPatterns/AbstractFactory/Factories/AbstractFactory.js"></script>
+    <script src="DesignPatterns/AbstractFactory/Factories/ConstructionFactory.js"></script>
+    <script src="DesignPatterns/AbstractFactory/Factories/TroopFactory.js"></script>
+    
+    <!----- DESIGN PATTERN: Constructor ----->
+
+    <script src="DesignPatterns/Constructor/Builders/Builder.js"></script>
+    <script src="DesignPatterns/Constructor/Builders/WhiteGem.js"></script>
+    <script src="DesignPatterns/Constructor/Builders/BlueGem.js"></script>
+    <script src="DesignPatterns/Constructor/Builders/GreenGem.js"></script>
+
+    <script src="DesignPatterns/Constructor/Class/Director.js"></script>
+    <script src="DesignPatterns/Constructor/Class/Gem.js"></script>
+
+    <!----- DESIGN PATTERN: Decorator ----->
+
+    <script src="DesignPatterns/Decorator/AbstractDecorator/DecoratedCharacter.js"></script>
+    <script src="DesignPatterns/Decorator/ConcreteDecorator/AttackBoost.js"></script>
+    <script src="DesignPatterns/Decorator/ConcreteDecorator/AttackReduce.js"></script>
+    <script src="DesignPatterns/Decorator/ConcreteDecorator/DefenseBoost.js"></script>
+    <script src="DesignPatterns/Decorator/ConcreteDecorator/DefenseReduce.js"></script>
+
+    <!----- DESIGN PATTERN: Memento ----->
+    <script src="DesignPatterns/Memento/CareTaker.js"></script>
+    <script src="DesignPatterns/Memento/Memento.js"></script>
+
+    <!-- Main -->
+    <script src="style.js"></script>
+    <script src="main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,79 @@
+//Todo
+
+- fix tool tip after character deployment ✓
+- Give every troop a sprite ✓
+- Create menu for each troop ✓
+- Implement move cost to troop movement ✓
+- Decrease gold when you create a character ✓
+- On highlight available moves make sure highlighted moves are topped by what the dice says (from castle menu) ✓
+- Create the dice.... (number of moves per turn/roll dice) ✓
+- Provide availabe moves to attack (rangee). Probably highlight in new color ✓
+- create change turns ✓
+
+- when an attack cell is clicked... make sure character fight ✓
+- remove defense points ✓ 
+- Modify attack so it can attack castles ✓ 
+- make a character die if HP <= 0; ✓
+- power up cells ✓ 
+-- -- when a troop lands on a oower up field it may grab the power up ✓ 
+-- trops should have a power up array ✓ 
+
+- gems ✓ 
+-- troops should have a gem attribute with the amount of gems being held ✓ 
+-- when a troop lands on a gem field it can choose whether to grab it or not ✓ 
+
+
+TODO:
+* Finish decorator: so it works for different types of powerup (only attack work)  ✓ 
+* test memento: Make sure stats are restored when player's turn starts  ✓ 
+* make sure powerups and gems are in different cells ✓
+
+
+
+- add End Turn button to player data ✓ 
+-- Prolly this icon: <i class="fas fa-hourglass-end"></i> ✓ 
+- refresh character defense after turn ends  Posible Pattern: Memento ✓ 
+
+- add power up subMenu to character menu/ Allow the user of powerUps  ✓ 
+-- refresh stats after the use of power up * Posible Pattern: decorator  ✓ 
+-- make sure character stats go back to norma after power up turn finishes Posible Pattern: Memento  ✓ 
+
+
+- make sure characters can only attack once 
+- make sure character only get to move once 
+- create timer per turn
+- construction should take 30 seconds to build?
+
+- troop kill
+-- when a character kills a troop it keeps its gems
+
+- Spy: Everything
+
+-- Add: YOU WON when someone wins.. create: checkWin();
+
+
+-------------------
+Preguntas:
+
+Yo no pierdo puntos de defensa ni de hp en mi turno????
+R//Correcto
+
+Para que usaria un boost de defensa si es mi turno???
+R// El power up dura hasta que mi turno vuelva a empezar
+
+Las construcciones puedes estar siempte dento del castillo?
+R// Si
+
+como funciona lo del spia?
+-- el entra a castillos enemigos
+R// 
+
+-un jugador debe moverse antes de atacar? solo puede atacar un vez?
+//Un puede
+//R - atacar mover terminar
+//R- mover atacar terminar
+//R atacr termonar
+//R mover terminar
+
+
+

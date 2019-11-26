@@ -1,0 +1,98 @@
+.slideButtonY {
+    width: 160px;
+    height: 50px;
+    background-color: #2a363f;
+    /* Center item */
+    position: absolute;
+    /* //Center item */
+    cursor: pointer;
+    overflow: hidden;
+    color: #fff;
+    border-radius: 5px;
+}
+
+.slideButtonY:hover {
+    background-color: #1e272e;
+}
+
+/* Add text */
+
+#playGameButton:before {
+    content: "Play Game";
+    font-size: 14px;
+    /* Center item */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /* //Center item */
+    transition: top 0.3s;
+}
+
+/* Slide up */
+
+#playGameButton:hover::before {
+    top: -30px;
+}
+
+/* Add icon/alternate text */
+
+#playGameButton::after {
+    content: "\f11b";
+    font-family: "FontAwesome";
+    font-weight: 900;
+    font-size: 30px;
+    /* Move down */
+    position: absolute;
+    top: calc(100% + 30%);
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /* //Move down */
+    transition: top 0.3s;
+}
+
+#playGameButton:hover::after {
+    top: 50%;
+}
+
+/***************************/
+
+/* Add text */
+
+#startGameButton:before {
+    content: "Start";
+    font-size: 14px;
+    /* Center item */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /* //Center item */
+    transition: top 0.3s;
+}
+
+/* Slide up */
+
+#startGameButton:hover::before {
+    top: -30px;
+}
+
+/* Add icon/alternate text */
+
+#startGameButton::after {
+    content: "\f11b";
+    font-family: "FontAwesome";
+    font-weight: 900;
+    font-size: 30px;
+    /* Move down */
+    position: absolute;
+    top: calc(100% + 30%);
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /* //Move down */
+    transition: top 0.3s;
+}
+
+#startGameButton:hover::after {
+    top: 50%
+}

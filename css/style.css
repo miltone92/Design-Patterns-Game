@@ -1,0 +1,232 @@
+html {
+  height: 100%;
+}
+
+body {
+  font-family: "Arial", Serif;
+  background-color: #f4f4f4;
+  height: 100%;
+}
+
+/****************
+* Top Navigation
+****************/
+
+.myNavbar {
+  /* background-color: #1e272e; */
+  overflow: hidden;
+  padding: 20px;
+  overflow: hidden;
+}
+
+.myNavbar a {
+  float: left;
+  display: block;
+  /* color: #f2f2f2; */
+  color: #2d3436;
+  text-align: center;
+  padding: 5px 16px;
+  text-decoration: none;
+  font-size: 17px;
+  transition: color 1s;
+  transition: font-size 1s;
+  float: right;
+}
+
+.myNavbar ul {
+  margin: 8px 0 0 0;
+  list-style: none;
+}
+
+.myNavbar a:hover {
+  /* background-color: #485460; */
+  color: #fd9644;
+  font-size: 20px;
+}
+
+#openSlideButton {
+  display: block;
+  float: left;
+}
+
+/****************
+* Side Navigation
+****************/
+
+#currentPlayerData {
+  padding-top: 30px;
+  font-size: 14px;
+  font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+  /* background-color: #192025; */
+}
+
+#currentPlayerData p {
+  padding: 0px 0px 0px 30px;
+}
+
+.side-nav {
+  height: 100%;
+  float: left;
+  background-color: #2d3436;
+  /* 1e272e */
+  /* opacity: 0.9; */
+  overflow-x: hidden;
+  padding-top: 10px;
+  transition: 0.8s;
+  /* below is optional */
+  color: #fff;
+  width: 250px;
+  margin-left: -250px;
+  box-shadow: 0 0px 8px 0 rgba(0, 0, 0, 0.2), 0 0px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.side-nav a {
+  text-decoration: none;
+  color: #fff;
+  display: block;
+  transition: 0.3s;
+  font-size: 14px;
+  font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+}
+
+.side-nav p {
+  padding: 3px 3px 3px 30px;
+  text-decoration: none;
+  /* font-size: 18px; */
+  color: #fff;
+  display: block;
+  transition: 0.3s;
+}
+
+.side-nav li {
+  padding: 3px 3px 3px 30px;
+  text-decoration: none;
+  font-size: 14px;
+  color: #fff;
+  display: block;
+  transition: 0.3s;
+}
+
+.side-nav .btn-close {
+  top: 0;
+  right: 22px;
+  float: right;
+  margin-right: 15px;
+  font-size: 36 !important;
+}
+
+/* //Rotation*/
+
+.side-nav .btn-close:hover {
+  color: #fd9644;
+  background-color: transparent;
+}
+
+/********************************
+* Sidemenu: Accordion submenu for attributes
+********************************/
+
+.accordionMenu {
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.accordionMenu .item {
+  border-top: 1px solid #272c2e;
+  overflow: hidden;
+  padding: 0;
+}
+
+.accordionMenu .item>.sidemenuButton {
+  display: block;
+  padding: 9px 20px;
+  background: #2d3436;
+  color: #fff;
+  position: relative;
+}
+
+.accordionMenu .sidemenuButton:before {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background: #2d3436;
+  left: 20px;
+  bottom: -7px;
+  transform: rotate(45deg);
+}
+
+.accordionMenu .sidemenuButton i {
+  margin-right: 10px;
+}
+
+.accordionMenu .subMenu {
+  background: #fd9644;
+  overflow: hidden;
+  transition: max-height 1s;
+  max-height: 0;
+}
+
+.accordionMenu .subMenu a {
+  display: block;
+  padding: 3px 50px;
+  color: #000;
+  font-size: 14px;
+  margin: 4px 0;
+  position: relative;
+  display: grid;
+  grid-template-columns: auto auto;
+}
+
+.accordionMenu .subMenu a:before {
+  content: "";
+  position: absolute;
+  width: 6px;
+  height: 100%;
+  background: #2d3436;
+  left: 0;
+  top: 0;
+  transition: 0.3s;
+  opacity: 0;
+}
+
+.accordionMenu .subMenu a:hover:before {
+  opacity: 1;
+}
+
+.accordionMenu .item:hover .subMenu {
+  max-height: 10em;
+  overflow-y: auto;
+}
+
+/********************************
+* End turn buttos
+********************************/
+
+#endTurnButton:hover {
+  background-color: #161d22;
+  cursor: pointer;
+}
+
+/****************
+* main
+****************/
+
+#main {
+  padding: 20px;
+  overflow: hidden;
+}
+
+#general {
+  /* overflow: hidden; */
+}
+
+.alert {
+  margin-bottom: 0px;
+}
+
+@media (max-width: 586px) {
+  .myNavbar-nav {
+    display: none;
+  }
+}

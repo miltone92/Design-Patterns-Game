@@ -1,0 +1,86 @@
+.grid-container {
+    display: grid;
+    grid-template-columns: auto auto auto auto auto auto auto auto auto auto;
+    background-color: #1e272e;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.grid-item {
+    background-color: #485460;
+    border: 1px solid #1e272e;
+    padding: 10px;
+    font-size: 22px;
+    text-align: center;
+}
+
+/* .grid-item:hover {
+      background-color: #44bd32;
+      color: #fff;
+      transition: 0.8s;
+  } */
+
+.castleItem:hover {
+    background-color: #c23616;
+    transition: 0.8s;
+}
+
+/* .whiteGemItem {
+      background-color: #d2dae2;
+      color: black;
+      transition: 0.8s;
+  }
+  
+  .blueGemItem {
+      background-color: #34e7e4;
+      color: black;
+      transition: 0.8s;
+  }
+  
+  .greenGemItem {
+      background-color: #0be881;
+      color: black;
+      transition: 0.8s;
+  } */
+
+.powerUp {
+    background-color: #badc58;
+    color: transparent;
+    transition: background-color;
+    position: relative;
+}
+
+.powerUp::before {
+    content: "\f067";
+    font-family: "FontAwesome";
+    position: absolute;
+    color: #fff;
+}
+
+.currentPlayerItem {
+    background-color: #0be881;
+    transition: background-color 0.8s;
+}
+
+.availableCell {
+    background-color: #fd9644;
+    transition: background-color 0.5s;
+}
+
+.availableCell:hover {
+    background-color: #f3872e;
+    transition: background-color 0.5s;
+    cursor: pointer;
+}
+
+.attackCell {
+    background-color: #ff6b81;
+    transition: background-color 0.5s;
+    color: #fff;
+}
+
+.attackCell:hover {
+    background-color: #ff4757;
+    transition: background-color 0.5s;
+    cursor: pointer;
+}
