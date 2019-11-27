@@ -1,9 +1,1 @@
-class AbstractFactory {
-  //Prototypes
-  createCharacter() {
-    return null;
-  }
-  createConstruction() {
-    return null;
-  }
-}
+//# sourceMappingURL=AbstractFactory.js.map

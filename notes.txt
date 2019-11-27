@@ -23,10 +23,10 @@
 -- when a troop lands on a gem field it can choose whether to grab it or not ✓ 
 
 
-TODO:
-* Finish decorator: so it works for different types of powerup (only attack work)  ✓ 
-* test memento: Make sure stats are restored when player's turn starts  ✓ 
-* make sure powerups and gems are in different cells ✓
+
+- Finish decorator: so it works for different types of powerup (only attack work)  ✓ 
+- test memento: Make sure stats are restored when player's turn starts  ✓ 
+- make sure powerups and gems are in different cells ✓
 
 
 
@@ -38,6 +38,7 @@ TODO:
 -- refresh stats after the use of power up * Posible Pattern: decorator  ✓ 
 -- make sure character stats go back to norma after power up turn finishes Posible Pattern: Memento  ✓ 
 
+TODO:
 
 - make sure characters can only attack once 
 - make sure character only get to move once 
