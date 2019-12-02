@@ -5,7 +5,7 @@ class ConstructionFactory implements AbstractFactory {
       case "Castle":
         construction = new Castle();
         break;
-      case "Corossbow":
+      case "Crossbow":
         construction = new Crossbow();
         break;
       case "Catapult":

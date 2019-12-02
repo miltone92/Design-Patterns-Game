@@ -140,6 +140,7 @@ let getCurrentColumn = cellNumber => {
   }
 };
 
+//This method expects cell numbers
 let getCellDifference = (cellA, cellB) => {
   let difference;
 
@@ -177,12 +178,6 @@ let highlightPossibleMoves = (currentCell, availableMovement) => {
 
   let div = document.getElementById("gameGrid");
   let lis = div.getElementsByTagName("div");
-
-  // for (const cell of lis) {
-  //   if ($(cell).hasClass("availableCell")) {
-  //     $(cell).removeClass("availableCell");
-  //   }
-  // }
 
   let leftBreak = false;
   let rightBreak = false;
@@ -567,6 +562,8 @@ let keepGem = (cell, gemType, character) => {
   }
 
   localStorage.setItem(currentPlayer, JSON.stringify(player));
+  refreshBoard();
+  characterMenu(character.id);
 };
 
 /******************************
@@ -715,70 +712,84 @@ let addToolTip = () => {
     let itemType = $(cell).attr("itemType");
     let icon = $(cell).html();
 
-    $(cell).attr("data-toggle", "tooltip");
-    $(cell).attr("data-placement", "right");
-    $(cell).attr("data-html", "true");
+    let invisible = $(cell).attr("invisible");
+    if (typeof invisible != typeof undefined && invisible == "true") {
+      console.log("nothing");
+    } else {
+      $(cell).attr("data-toggle", "tooltip");
+      $(cell).attr("data-placement", "right");
+      $(cell).attr("data-html", "true");
 
-    if ($(cell).attr("troopId")) {
-      let playerAmount = localStorage.getItem("playerAmount");
-      for (let i = 0; i < playerAmount; i++) {
-        let player = JSON.parse(localStorage.getItem("player" + (i + 1)));
+      if ($(cell).attr("troopId")) {
+        let playerAmount = localStorage.getItem("playerAmount");
+        for (let i = 0; i < playerAmount; i++) {
+          let player = JSON.parse(localStorage.getItem("player" + (i + 1)));
 
-        let character;
-        for (const troop of player.troops) {
-          if (troop.id == $(cell).attr("troopId")) {
-            character = troop;
+          let character;
+          for (const troop of player.troops) {
+            if (troop.id == $(cell).attr("troopId")) {
+              character = troop;
+            }
+          }
+          if (character) {
+            $(cell).attr(
+              "title",
+              `
+            ${character.sprite} ${character.type} <br>
+            Owner: ${character.owner} <br>
+            <br>
+            HP: ${character.healthPoints} <br>
+            Attack: ${character.attack} <br>
+            Defense: ${character.defense} <br>
+            Range: ${character.range} <br>
+            Movements: ${character.movements} <br>
+            Gems: ${character.gems} <br>
+            `
+            );
+            $(cell).attr(
+              "data-original-title",
+              `
+            ${character.sprite} ${character.type} <br>
+            Owner: ${character.owner} <br>
+            <br>
+            HP: ${character.healthPoints} <br>
+            Attack: ${character.attack} <br>
+            Defense: ${character.defense} <br>
+            Range: ${character.range} <br>
+            Movements: ${character.movements} <br>
+            Gems: ${character.gems} <br>
+            `
+            );
           }
         }
-        if (character) {
-          $(cell).attr(
-            "title",
-            `
-            ${character.sprite} ${character.type} <br>
-            Owner: ${character.owner} <br>
-            <br>
-            HP: ${character.healthPoints} <br>
-            Attack: ${character.attack} <br>
-            Defense: ${character.defense} <br>
-            Range: ${character.range} <br>
-            Movements: ${character.movements} <br>
-            `
-          );
-          $(cell).attr(
-            "data-original-title",
-            `
-            ${character.sprite} ${character.type} <br>
-            Owner: ${character.owner} <br>
-            <br>
-            HP: ${character.healthPoints} <br>
-            Attack: ${character.attack} <br>
-            Defense: ${character.defense} <br>
-            Range: ${character.range} <br>
-            Movements: ${character.movements} <br>
-            `
-          );
-        }
-      }
-    } else {
-      $(cell).attr(
-        "title",
-        `
+      } else {
+        $(cell).attr(
+          "title",
+          `
         ${icon} ${itemType} <br>
         Owner: ${owner}`
-      );
+        );
+      }
     }
   }
   callToolTips();
 };
 
 /******************************
- * Move character board to castle
+ * Move character from board to castle
  *****************************/
 
 let enterCastle = () => {
   let selectedCharacter = JSON.parse(localStorage.getItem("selectedCharacter"));
   let currentPlayer = localStorage.getItem("currentPlayer");
   let player = JSON.parse(localStorage.getItem(currentPlayer));
+
+  //check if character holds gems
+  if (selectedCharacter.gems > 0) {
+    //ad gold to castle
+    player.castle.gold += selectedCharacter.gems;
+    selectedCharacter.gems = 0;
+  }
 
   //Add character to castle
   player.castle.troops.push(selectedCharacter);
@@ -787,10 +798,32 @@ let enterCastle = () => {
   let index = player.troops.findIndex(x => x.id == selectedCharacter.id);
   if (index > -1) {
     player.troops.splice(index, 1);
-    localStorage.setItem(currentPlayer, JSON.stringify(player));
+    // localStorage.setItem(currentPlayer, JSON.stringify(player));
   }
 
   localStorage.setItem(currentPlayer, JSON.stringify(player));
+  showPlayerData();
+};
+
+let enterEnemyCastle = (enemyPlayer, currentEnemy) => {
+  let selectedCharacter = JSON.parse(localStorage.getItem("selectedCharacter"));
+  let currentPlayer = localStorage.getItem("currentPlayer");
+  let player = JSON.parse(localStorage.getItem(currentPlayer));
+
+  //get enemy castle
+
+  //Add character to enemy castle
+  enemyPlayer.castle.enemies.push(selectedCharacter);
+
+  //Remove character from players deployed troops
+  let index = player.troops.findIndex(x => x.id == selectedCharacter.id);
+  if (index > -1) {
+    player.troops.splice(index, 1);
+  }
+
+  localStorage.setItem(currentEnemy, JSON.stringify(enemyPlayer));
+  localStorage.setItem(currentPlayer, JSON.stringify(player));
+  showPlayerData();
 };
 /******************************
  * Move character from castle to board
@@ -805,13 +838,28 @@ let deployTroop = castleCellNumber => {
   for (const cell of possibleMoves) {
     $(cell).click(function() {
       //Remove character from castle
-
       let index = player.castle.troops.findIndex(
         x => x.id == selectedCharacter.id
       );
       if (index > -1) {
         player.castle.troops.splice(index, 1);
       }
+
+      //Remove charachter from enemy player castle
+      let currentCell = $(`[cellNumber=${castleCellNumber}]`);
+      let castleOwner = $(currentCell).attr("owner");
+      let enemyPlayer = JSON.parse(localStorage.getItem(castleOwner));
+
+      if (castleOwner != currentPlayer) {
+        let index = enemyPlayer.castle.enemies.findIndex(
+          x => x.id == selectedCharacter.id
+        );
+        if (index > -1) {
+          enemyPlayer.castle.enemies.splice(index, 1);
+        }
+        localStorage.setItem(castleOwner, JSON.stringify(enemyPlayer));
+      }
+
       //Add character to players deployed troops
       player.troops.push(selectedCharacter);
       localStorage.setItem(currentPlayer, JSON.stringify(player));
@@ -839,19 +887,40 @@ let deployTroop = castleCellNumber => {
       checkPowerUp(cell, selectedCharacter);
       checkGems(cell, selectedCharacter);
 
-      //refresh board
-      refreshBoard();
-      //remove selected character
-      localStorage.setItem("selectedCharacter", null);
-
       //get amount of moves
       let destinationCellNumber = $(cell).attr("cellNumber");
       let cellDifference = getCellDifference(
         castleCellNumber,
         destinationCellNumber
       );
+
+      //update character's moves left
+      let playerTroops = player.troops;
+
+      for (const troop of playerTroops) {
+        if (troop.id == selectedCharacter.id) {
+          troop.movesLeft -= cellDifference;
+        }
+      }
+      localStorage.setItem(currentPlayer, JSON.stringify(player));
+
+      //save character memento to restory movesLeft later (on restoreMoves())
+      let troopFactory = new TroopFactory();
+      let templateCharacter = troopFactory.createCharacter(
+        selectedCharacter.type
+      );
+      templateCharacter.id = selectedCharacter.id;
+      careTaker.add(templateCharacter.saveMemento());
+
+      localStorage.setItem(currentPlayer, JSON.stringify(player));
+
       //refresh moves left
       updateMovesLeft(cellDifference);
+
+      //refresh board
+      refreshBoard();
+      //remove selected character
+      localStorage.setItem("selectedCharacter", null);
 
       //update player info
       showPlayerData();
@@ -875,81 +944,192 @@ let moveTroop = currentCell => {
   let possibleMoves = $(`.availableCell`);
   for (const cell of possibleMoves) {
     $(cell).click(function() {
-      //remove from current cell
-      $(currentCell).html(null);
-      $(currentCell).removeClass("playerItem");
-      $(currentCell).removeClass("currentPlayerItem");
-      $(currentCell).attr("owner", null);
-      $(currentCell).attr("troopId", null);
-      $(currentCell).attr("itemType", null);
-      $(currentCell).removeAttr("data-toggle", null);
-      $(currentCell).removeAttr("data-placement", null);
-      $(currentCell).removeAttr("data-html", null);
-      $(currentCell).removeAttr("title", null);
-      $(currentCell).removeAttr("data-original-title", null);
-
       let cellOwner = $(cell).attr("owner");
       let cellType = $(cell).attr("itemType");
+      let isPlayerItem = $(cell).hasClass("playerItem");
 
-      //check if desired cell is home castle
-      if (cellOwner == currentPlayer && cellType == "castleItem") {
-        enterCastle();
-        //Remove on this click function from all other cells
-        for (const cell of possibleMoves) {
-          //$(cell).off();
-          $(cell)
-            .prop("onClick", null)
-            .off("click");
-        }
-        //refresh board
-        refreshBoard();
-
-        //refresh castle menu
-        castleMenu();
-
-        // if desired cell is not home castle
-      } else {
-        //Show on board
-        $(cell).html(selectedCharacter.sprite);
-        $(cell).addClass("playerItem");
-        $(cell).addClass("currentPlayerItem");
-        $(cell).attr("owner", currentPlayer);
-        $(cell).attr("troopId", selectedCharacter.id);
-        $(cell).attr("itemType", selectedCharacter.type);
-
-        //Clean board active moves
-        // removePossibleMoves();
-
-        //Remove on this click function from all other cells
-        for (const cell of possibleMoves) {
-          //$(cell).off();
-          $(cell)
-            .prop("onClick", null)
-            .off("click");
-        }
-
-        //check if desired cell has power up
-        checkPowerUp(cell, selectedCharacter);
-        checkGems(cell, selectedCharacter);
-
-        //refresh board
-        refreshBoard();
-
-        //remove selected character
-        localStorage.setItem("selectedCharacter", null);
-
-        //get amount of moves
-        let destinationCellNumber = $(cell).attr("cellNumber");
-        let currentCellNumber = $(currentCell).attr("cellNumber");
-        let cellDifference = getCellDifference(
-          currentCellNumber,
-          destinationCellNumber
+      //get amount of moves traveled
+      let destinationCellNumber = $(cell).attr("cellNumber");
+      let currentCellNumber = $(currentCell).attr("cellNumber");
+      let cellDifference = getCellDifference(
+        currentCellNumber,
+        destinationCellNumber
+      );
+      //verify the cell you are moving for is not some else player item
+      if (cellOwner != currentPlayer && !isPlayerItem) {
+        //remove from current cell
+        $(currentCell).html(
+          getCurrentColumn($(currentCell).attr("cellNumber"))
         );
+        $(currentCell).removeClass("playerItem");
+        $(currentCell).removeClass("currentPlayerItem");
+        $(currentCell).attr("owner", null);
+        $(currentCell).attr("troopId", null);
+        $(currentCell).attr("itemType", null);
+        $(currentCell).removeAttr("data-toggle", null);
+        $(currentCell).removeAttr("data-placement", null);
+        $(currentCell).removeAttr("data-html", null);
+        $(currentCell).removeAttr("title", null);
+        $(currentCell).removeAttr("data-original-title", null);
+
+        //check if desired cell is home castle
+        if (cellOwner == currentPlayer && cellType == "castleItem") {
+          enterCastle();
+          //Remove on this click function from all other cells
+          for (const cell of possibleMoves) {
+            //$(cell).off();
+            $(cell)
+              .prop("onClick", null)
+              .off("click");
+          }
+
+          //update character's moves left
+          let playerTroops = player.troops;
+
+          for (const troop of playerTroops) {
+            if (troop.id == selectedCharacter.id) {
+              troop.movesLeft -= cellDifference;
+            }
+          }
+
+          localStorage.setItem(currentPlayer, JSON.stringify(player));
+
+          //save character memento to restory movesLeft later (on restoreMoves())
+          let troopFactory = new TroopFactory();
+          let templateCharacter = troopFactory.createCharacter(
+            selectedCharacter.type
+          );
+          templateCharacter.id = selectedCharacter.id;
+          careTaker.add(templateCharacter.saveMemento());
+
+          //refresh moves left
+          updateMovesLeft(cellDifference);
+
+          //refresh board
+          refreshBoard();
+
+          //refresh castle menu
+          castleMenu();
+
+          //remove selected character
+          localStorage.setItem("selectedCharacter", null);
+
+          //update player info
+          showPlayerData();
+
+          // if desired cell is not home castle
+        } else {
+          //Show on board
+          $(cell).html(selectedCharacter.sprite);
+          $(cell).addClass("playerItem");
+          $(cell).addClass("currentPlayerItem");
+          $(cell).attr("owner", currentPlayer);
+          $(cell).attr("troopId", selectedCharacter.id);
+          $(cell).attr("itemType", selectedCharacter.type);
+
+          //Clean board active moves
+          // removePossibleMoves();
+
+          //Remove on this click function from all other cells
+          for (const cell of possibleMoves) {
+            //$(cell).off();
+            $(cell)
+              .prop("onClick", null)
+              .off("click");
+          }
+
+          //check if desired cell has power up
+          checkPowerUp(cell, selectedCharacter);
+          checkGems(cell, selectedCharacter);
+
+          //update character's moves left
+          let playerTroops = player.troops;
+
+          for (const troop of playerTroops) {
+            if (troop.id == selectedCharacter.id) {
+              troop.movesLeft -= cellDifference;
+            }
+          }
+          localStorage.setItem(currentPlayer, JSON.stringify(player));
+
+          //save character memento to restory movesLeft later (on restoreMoves())
+          let troopFactory = new TroopFactory();
+          let templateCharacter = troopFactory.createCharacter(
+            selectedCharacter.type
+          );
+          templateCharacter.id = selectedCharacter.id;
+          careTaker.add(templateCharacter.saveMemento());
+
+          //refresh moves left
+          updateMovesLeft(cellDifference);
+
+          //refresh board
+          refreshBoard();
+
+          characterMenu(selectedCharacter.id);
+
+          //remove selected character
+          localStorage.setItem("selectedCharacter", null);
+
+          //update player info
+          showPlayerData();
+        }
+      } // 1) if your selected player is a SPY
+      // 2)if the cell you are moving into is an enemy castle
+      //Enter enemy castle
+      else if (
+        cellOwner != currentPlayer &&
+        cellType == "castleItem" &&
+        selectedCharacter.type == "Spy"
+      ) {
+        //remove from current cell
+        $(currentCell).html(
+          getCurrentColumn($(currentCell).attr("cellNumber"))
+        );
+        $(currentCell).removeClass("playerItem");
+        $(currentCell).removeClass("currentPlayerItem");
+        $(currentCell).attr("owner", null);
+        $(currentCell).attr("troopId", null);
+        $(currentCell).attr("itemType", null);
+        $(currentCell).removeAttr("data-toggle", null);
+        $(currentCell).removeAttr("data-placement", null);
+        $(currentCell).removeAttr("data-html", null);
+        $(currentCell).removeAttr("title", null);
+        $(currentCell).removeAttr("data-original-title", null);
+
+        let enemyOwner = $(cell).attr("owner");
+        let enemyPlayer = JSON.parse(localStorage.getItem(enemyOwner));
+
+        enterEnemyCastle(enemyPlayer, enemyOwner);
+        //Remove on this click function from all other cells
+        for (const cell of possibleMoves) {
+          //$(cell).off();
+          $(cell)
+            .prop("onClick", null)
+            .off("click");
+        }
+
         //refresh moves left
         updateMovesLeft(cellDifference);
-
+        //refresh board
+        refreshBoard();
         //update player info
         showPlayerData();
+        //enemy castle menu
+        enemyCastleMenu(enemyOwner, currentCell);
+      } else {
+        callAlert("warning", "Woops ", "You cannot move into a player's item");
+        //Remove on this click function from all other cells
+        for (const cell of possibleMoves) {
+          //$(cell).off();
+          $(cell)
+            .prop("onClick", null)
+            .off("click");
+        }
+        //refresh board
+        refreshBoard();
+        //refresh castle menu
+        castleMenu();
       }
     });
   }
@@ -967,6 +1147,23 @@ let attack = (currentCell, character) => {
   let possibleAttacks = $(`.attackCell`);
   for (const cell of possibleAttacks) {
     $(cell).click(function() {
+      //save character memento to restory attack boolean later on restoreCharacteStats())
+      let troopFactory = new TroopFactory();
+      let templateCharacter = troopFactory.createCharacter(character.type);
+      templateCharacter.id = character.id;
+      careTaker.add(templateCharacter.saveMemento());
+      character.attacked = true;
+
+      //update character's attacked status
+      let playerTroops = player.troops;
+
+      for (const troop of playerTroops) {
+        if (troop.id == character.id) {
+          troop.attacked = true;
+        }
+      }
+      localStorage.setItem(currentPlayer, JSON.stringify(player));
+
       //Get enemyPlayer and enemy character or castle
 
       let enemyOwner = $(cell).attr("owner");
@@ -1008,6 +1205,9 @@ let attack = (currentCell, character) => {
         }
         //refresh board
         refreshBoard();
+
+        //call menu
+        characterMenu(character.id);
       } //if enemy == troop
       else {
         let enemyTroopId = $(cell).attr("troopId");
@@ -1067,6 +1267,110 @@ let attack = (currentCell, character) => {
           }
           //refresh board
           refreshBoard();
+
+          //call menu
+          characterMenu(character.id);
+        } // end of if(enemyTroop)
+      }
+    });
+  }
+};
+
+/******************************
+ * Attack enemy from castle
+ *****************************/
+let attackFromCastle = character => {
+  let selectedCharacter = JSON.parse(localStorage.getItem("selectedCharacter"));
+  let currentPlayer = localStorage.getItem("currentPlayer");
+  let player = JSON.parse(localStorage.getItem(currentPlayer));
+
+  let possibleAttacks = $(`.attackCell`);
+  for (const cell of possibleAttacks) {
+    $(cell).click(function() {
+      //save character memento to restory attack boolean later on restoreCharacteStats())
+      let constructionFactory = new ConstructionFactory();
+      let templateCharacter = constructionFactory.createConstruction(
+        character.type
+      );
+      templateCharacter.id = character.id;
+      careTaker.add(templateCharacter.saveMemento());
+      character.attacked = true;
+
+      //update character's attacked status
+      for (const construction of player.castle.catapults) {
+        if (construction.id == character.id) {
+          construction.attacked = true;
+        }
+      }
+      for (const construction of player.castle.crossbows) {
+        if (construction.id == character.id) {
+          construction.attacked = true;
+        }
+      }
+      localStorage.setItem(currentPlayer, JSON.stringify(player));
+
+      //Get enemyPlayer and enemy character
+      let enemyOwner = $(cell).attr("owner");
+      let enemyPlayer = JSON.parse(localStorage.getItem(enemyOwner));
+
+      let enemyTroopId = $(cell).attr("troopId");
+      let enemyTroops = enemyPlayer.troops;
+      let enemyTroop;
+
+      for (const troop of enemyTroops) {
+        if (troop.id == enemyTroopId) {
+          enemyTroop = troop;
+        }
+      }
+
+      //Now reduce defense and HP to enemy character
+      if (enemyTroop) {
+        let impact = enemyTroop.defense - character.attack;
+        //reduce defense
+        enemyTroop.defense -= character.attack;
+        if (enemyTroop.defense < 0) {
+          enemyTroop.defense = 0;
+        }
+        //reduce HP
+        if (impact < 0) {
+          enemyTroop.healthPoints += impact;
+
+          //check to see if enemy character died
+          if (enemyTroop.healthPoints <= 0) {
+            //Remove enemy character from players enemy troops
+            let index = enemyPlayer.troops.findIndex(
+              x => x.id == enemyTroop.id
+            );
+            if (index > -1) {
+              enemyPlayer.troops.splice(index, 1);
+              localStorage.setItem(enemyOwner, JSON.stringify(enemyPlayer));
+            }
+            //remove from board
+            $(cell).html(null);
+            $(cell).removeClass("playerItem");
+            $(cell).removeClass("currentPlayerItem");
+            $(cell).attr("owner", null);
+            $(cell).attr("troopId", null);
+            $(cell).attr("itemType", null);
+            // $(currentCell).removeAttr("data-toggle", null);
+            // $(currentCell).removeAttr("data-placement", null);
+            // $(currentCell).removeAttr("data-html", null);
+            // $(currentCell).removeAttr("title", null);
+            // $(currentCell).removeAttr("data-original-title", null);
+          }
+
+          localStorage.setItem(enemyOwner, JSON.stringify(enemyPlayer));
+
+          //Remove on this click function from all other cells
+          for (const cell of possibleAttacks) {
+            //$(cell).off();
+            $(cell)
+              .prop("onClick", null)
+              .off("click");
+          }
+          //refresh board
+          refreshBoard();
+          castleMenu();
         } // end of if(enemyTroop)
       }
     });
@@ -1097,8 +1401,6 @@ let usePowerUp = (character, player) => {
   //call the factory to get character prototypes
   let troopFactory = new TroopFactory();
   let templateCharacter = troopFactory.createCharacter(character.type);
-  templateCharacter.defense = character.defense;
-  templateCharacter.attack = character.attack;
   templateCharacter.id = character.id;
 
   //Save character memento before using power up
@@ -1129,6 +1431,50 @@ let usePowerUp = (character, player) => {
   characterMenu(character.id);
 };
 
+let checkSpies = () => {
+  //Get current player castle
+  let currentPlayer = localStorage.getItem("currentPlayer");
+  let currentCastle;
+  let castles = $(`[itemType = castleItem]`);
+
+  for (const div of castles) {
+    if ($(div).attr("owner") == currentPlayer) {
+      currentCastle = div;
+    }
+  }
+  let currentCastleNumber = $(currentCastle).attr("cellnumber");
+
+  //Get all spies
+  let spies = $("[itemType = Spy]");
+
+  //Create template spy
+  let troopFactory = new TroopFactory();
+  let templateCharacter = troopFactory.createCharacter("Spy");
+
+  //manage board spies
+  for (const spy of spies) {
+    let spyCellNumber = $(spy).attr("cellNumber");
+
+    //if spy is current player spy
+    if ($(spy).hasClass("currentPlayerItem")) {
+      $(spy).html(`${templateCharacter.sprite}`);
+      $(spy).attr("invisible", "false");
+    } else {
+      //else if spy is near castle turn them invisible
+      let distance = getCellDifference(currentCastleNumber, spyCellNumber);
+      if (distance <= 5) {
+        $(spy).html(getCurrentColumn($(spy).attr("cellNumber")));
+        $(spy).attr("invisible", "true");
+        $(spy).removeAttr("data-toggle", null);
+        $(spy).removeAttr("data-placement", null);
+        $(spy).removeAttr("data-html", null);
+        $(spy).removeAttr("title", null);
+        $(spy).removeAttr("data-original-title", null);
+      }
+    }
+  }
+};
+
 /************************************************************
  * Dashboard Setup
  ***********************************************************/
@@ -1143,26 +1489,46 @@ let showPlayerData = () => {
   $("#currentPlayerData").empty();
   $("#currentPlayerData").append(`
       <div>
-        <p>
+        <div class="accordionMenu">
+        <li class="item">
+        <a  id="" class="sidemenuButton ">
         <i class="fas fa-user"></i> ${currentPlayer}
-        </p>
-        <p>
+        </a>
+        </li>
+        <li class="item">
+        <a  id="" class="sidemenuButton ">
         <i class="fas fa-money-bill-alt"></i> ${player.castle.gold}
-        </p>
-        <p>
-        <i class="fas fa-dice"></i> ${player.moves}
-        </p>
+        </a>
+        </li>
+        <li class="item">
+          <a  id="" class="sidemenuButton ">
+            <i class="fas fa-dice"></i>  ${player.moves}
+          </a>
+        </li>
+      
      
-          
-        <p id="endTurnButton">
-        <i class="fas fa-hourglass-end"></i> End Turn
-        </p> 
+          <li class="item">
+            <a href="#" id="endTurnButton" class="sidemenuButton timer">
+            <i class="fas fa-hourglass-half"></i> 00:00 
+            </a>
+            <div class="subMenu" id="endTurnSubMenu">
+              <a href="#crossbowSubMenu">
+                <div>
+                  <i class="fas fa-hourglass-end"></i>
+                </div>
+                <div> 
+                  End turn
+                </div>
+              </a>
+            </div>
+          </li>
+        </div>
          
   
         <br>
       </div>
     `);
-  $(`#endTurnButton`).click(function() {
+  $(`#endTurnButton, #endTurnSubMenu`).click(function() {
     changeTurn();
   });
 };
@@ -1170,6 +1536,107 @@ let showPlayerData = () => {
 /******************************
  * Item menus
  *****************************/
+
+let enemyCastleMenu = (castleOwner, currentCell) => {
+  let currentPlayer = localStorage.getItem(`currentPlayer`);
+  let player = JSON.parse(localStorage.getItem(`${currentPlayer}`));
+
+  //Show dashboard and hide the openSlideButton
+  $(`.side-nav`).css("margin-left", "0");
+  $(`#openSlideButton`).hide();
+
+  //Empty menu
+  $("#selectedItemData").empty();
+
+  //get enemy player
+  let enemyPlayer = JSON.parse(localStorage.getItem(`${castleOwner}`));
+  let enemyCastle = enemyPlayer.castle;
+
+  //get current cell number
+  let currentCellNumber = $(currentCell).attr("cellnumber");
+
+  //Castle data
+  $("#selectedItemData").append(
+    `<div id="itemAttributes" class="accordionMenu"></div>`
+  );
+  $("#selectedItemData").append(
+    `<div id="itemMethods" class="accordionMenu"></div>`
+  );
+  $("#itemAttributes").append(`
+  <div class="enemyCastleStats">
+    <p>
+      ${enemyCastle.graphic} Enemy Castle
+    </p>
+    <p>
+      <i class="fas fa-heart"></i> ${enemyCastle.healthPoints}
+    </p>
+    <p>
+      <i class="fas fa-money-bill-alt"></i> ${enemyCastle.gold}
+    </p>
+  </div>
+  <li class="item" id="spies">
+    <a class="sidemenuButton">
+      <i class="fas fa-user-secret"></i> Spies: ${enemyCastle.enemies.length}
+    </a>
+  </li>
+    `);
+  /*******************
+ * SPY
+ /*******************/
+  $("#spies").append(`
+  <div class="subMenu" id="spiesSubMenu"></div>
+  `);
+  for (const character of enemyPlayer.castle.enemies) {
+    randomIndex = generateRandomNumber(5);
+    $("#spiesSubMenu").append(`
+          <a href="#spiesSubMenu">
+            <div class="spy${randomIndex}">
+              ${character.sprite}
+         
+              <i class="fas fa-heart"></i> ${character.healthPoints} 
+            </div>
+           
+            <div class="spy${randomIndex}">
+            <i class="fas fa-boxes"></i>  ${character.storageCapacity}
+           
+            <i class="far fa-gem"></i>  ${character.gems}
+            </div>
+          </a>
+    `);
+    $(`.spy${randomIndex}`).click(function() {
+      //steal gold
+      let stealableAmount = character.storageCapacity - character.gems;
+
+      if (enemyPlayer.castle.gold > stealableAmount) {
+        enemyPlayer.castle.gold -= stealableAmount;
+        character.gems += stealableAmount;
+      } else {
+        enemyPlayer.castle.gold -= enemyPlayer.castle.gold;
+        character.gems += enemyPlayer.castle.gold;
+      }
+
+      localStorage.setItem(castleOwner, JSON.stringify(enemyPlayer));
+      localStorage.setItem(currentPlayer, JSON.stringify(player));
+      enemyCastleMenu(castleOwner, currentCell);
+      //move / deploy
+      if (player.moves > 0 && character.movesLeft > 0) {
+        //Set selected character to local storage
+        localStorage.setItem("selectedCharacter", JSON.stringify(character));
+        //clean board
+        removePossibleMoves();
+        //highlight possible moves
+        ////Define available moves
+        let smallest = getSmallestNumber(player.moves, character.movesLeft);
+        highlightPossibleMoves(currentCellNumber, smallest);
+        //add event listener to possible moves
+        deployTroop(currentCellNumber);
+      } else {
+        callAlert("warning", "Woops ", "You don't have any moves left!");
+      }
+    });
+  }
+}; //End enemyCastleMenu()
+
 let castleMenu = () => {
   //Show dashboard and hide the openSlideButton
   $(`.side-nav`).css("margin-left", "0");
@@ -1224,23 +1691,28 @@ let castleMenu = () => {
     `<div id="itemMethods" class="accordionMenu"></div>`
   );
   $("#itemAttributes").append(`
-        <p> ${castle.graphic} Castle </p>
-        <li>
-        <i class="fas fa-heart"></i> HP: ${castle.healthPoints}
-        </li> 
-        <li>
-        <i class="fas fa-university"></i> Catapults: ${castle.catapults.length}
-        </li> 
-        <li>
-        <i class="fas fa-university"></i> Corssbows: ${castle.crossbows.length}
-        </li> 
+  <div class="castleStats">
+        <p>
+        ${castle.graphic} Castle
+        </p>
+        <p>
+        <i class="fas fa-heart"></i> ${castle.healthPoints}
+        </p>
+      </div>
+ 
+        <li class="item" id="castleConsturctions">
+        <a class="sidemenuButton">
+          <i class="fas fa-university"></i>  Constructions:  ${castle.crossbows
+            .length + castle.catapults.length}
+        </a>
+      </li>
         <li class="item" id="castleTroops">
           <a class="sidemenuButton">
             <i class="fas fa-male"></i> Troops: ${castle.troops.length}
           </a>
         </li>
     
-        <br>
+       
     `);
   /*******************
      * Castle Troops
@@ -1269,12 +1741,80 @@ let castleMenu = () => {
         removePossibleMoves();
         //highlight possible moves
         ////Define available moves
-        let smallest = getSmallestNumber(player.moves, character.movements);
+        let smallest = getSmallestNumber(player.moves, character.movesLeft);
         highlightPossibleMoves(currentCellNumber, smallest);
         //add event listener to possible moves
         deployTroop(currentCellNumber);
       } else {
         callAlert("warning", "Woops ", "You don't have any moves left!");
+      }
+    });
+  }
+  /*******************
+     * Castle Constructions
+     /*******************/
+  $("#castleConsturctions").append(`
+     <div class="subMenu" id="castleConsturctionsSubMenu">
+     </div>
+     `);
+
+  for (const construction of player.castle.catapults) {
+    randomIndex = generateRandomNumber(5);
+    $("#castleConsturctionsSubMenu").append(`
+           <a href="#castleTroopsSubMenu">
+             <div id="construction${randomIndex}">
+               <i class="fas fa-male"></i> ${construction.type}
+               <br> 
+               <i class="fas fa-heart"></i> ${construction.healthPoints}
+             </div>
+           </a>
+     `);
+
+    $(`#construction${randomIndex}`).click(function() {
+      //**** Attack ****/
+      if (!construction.attacked) {
+        //Set selected character to local storage
+        localStorage.setItem("selectedCharacter", JSON.stringify(construction));
+
+        //clean board
+        removePossibleAttacks();
+
+        //highlight possible attack
+        highlightPossibleAttacks(currentCellNumber, construction.range);
+
+        attackFromCastle(construction);
+      } else {
+        callAlert("warning", "Woops ", "Catapult already attacked!");
+      }
+    });
+  }
+  for (const construction of player.castle.crossbows) {
+    randomIndex = generateRandomNumber(5);
+    $("#castleConsturctionsSubMenu").append(`
+          <a href="#castleTroopsSubMenu">
+            <div id="construction${randomIndex}">
+              <i class="fas fa-male"></i> ${construction.type}
+              <br> 
+              <i class="fas fa-heart"></i> ${construction.healthPoints}
+            </div>
+          </a>
+    `);
+
+    $(`#construction${randomIndex}`).click(function() {
+      //**** Attack ****/
+      if (!construction.attacked) {
+        //Set selected character to local storage
+        localStorage.setItem("selectedCharacter", JSON.stringify(construction));
+
+        //clean board
+        removePossibleAttacks();
+
+        //highlight possible attack
+        highlightPossibleAttacks(currentCellNumber, construction.range);
+
+        attackFromCastle(construction);
+      } else {
+        callAlert("warning", "Woops ", "Crossbow already attacked!");
       }
     });
   }
@@ -1315,10 +1855,29 @@ let castleMenu = () => {
       );
     } else {
       let construction = castle.createCatapult();
+      construction.id = "C" + generateRandomNumber(6);
       if (player.castle.gold >= construction.cost) {
-        player.castle = castle;
-        localStorage.setItem(currentPlayer, JSON.stringify(player));
-        castleMenu();
+        //update player's gold
+        updateGoldLeft(construction.cost);
+        //refresh player date
+        showPlayerData();
+        //add spinner
+        $("#createCatapult").append(`
+        <span id="spinner${construction.id}" class="spinner spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        `);
+        setTimeout(function() {
+          player.castle = castle;
+          localStorage.setItem(currentPlayer, JSON.stringify(player));
+          //Assign owner
+          construction.owner = currentPlayer;
+          assignOwner(construction);
+
+          //remove spinner
+          $(`#spinner${construction.id}`).remove();
+
+          //refresh castle menu
+          castleMenu();
+        }, 30000);
       } else {
         callAlert("warning", "Woops ", "You don't have enough gold!");
       }
@@ -1353,10 +1912,30 @@ let castleMenu = () => {
       );
     } else {
       let construction = castle.createCrossbow();
+      construction.id = "C" + generateRandomNumber(6);
       if (player.castle.gold >= construction.cost) {
-        player.castle = castle;
-        localStorage.setItem(currentPlayer, JSON.stringify(player));
-        castleMenu();
+        //update player's gold
+        updateGoldLeft(construction.cost);
+        //refresh player date
+        showPlayerData();
+        //add spinner
+        $("#createCrossbow").append(`
+        <span id="spinner${construction.id}" class="spinner spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        `);
+        setTimeout(function() {
+          player.castle = castle;
+          localStorage.setItem(currentPlayer, JSON.stringify(player));
+          //Assign owner
+          construction.owner = currentPlayer;
+          assignOwner(construction);
+
+          //remove spinner
+          $(`#spinner${construction.id}`).remove();
+
+          //refresh castle menu
+
+          castleMenu();
+        }, 30000);
       } else {
         callAlert("warning", "Woops ", "You don't have enough gold!");
       }
@@ -1391,6 +1970,7 @@ let castleMenu = () => {
     } else {
       //create character
       let character = castle.createArcher();
+      character.id = "C" + generateRandomNumber(6);
       //check gold
       if (player.castle.gold >= character.cost) {
         //Add character to player
@@ -1420,13 +2000,14 @@ let castleMenu = () => {
         <div class="subMenu" id="assassinSubMenu">
           <a href="#assassinSubMenu">
             <div>
-              <i class="fas fa-heart"></i> 10 <br>
-              <i class="fas fa-money-bill-alt"></i> 5 <br>
+              <i class="fas fa-heart"></i> 10 
+              <i class="fas fa-money-bill-alt"></i> 5 
               <i class="fas fa-boxes"></i> 2
             </div>
             <div>
               Attack: 3 Defense: 3 Movement: 4 Range: 2</div>
             </div>
+            
           </a>
         </div>
       </li>
@@ -1441,6 +2022,7 @@ let castleMenu = () => {
     } else {
       //create character
       let character = castle.createAssassin();
+      character.id = "C" + generateRandomNumber(6);
       //check gold
       if (player.castle.gold >= character.cost) {
         //Add character to player
@@ -1489,6 +2071,7 @@ let castleMenu = () => {
     } else {
       //create character
       let character = castle.createBerserker();
+      character.id = "C" + generateRandomNumber(6);
       //check gold
       if (player.castle.gold >= character.cost) {
         //Add character to player
@@ -1537,6 +2120,7 @@ let castleMenu = () => {
     } else {
       //create character
       let character = castle.createHorseman();
+      character.id = "C" + generateRandomNumber(6);
       //check gold
       if (player.castle.gold >= character.cost) {
         //Add character to player
@@ -1587,6 +2171,7 @@ let castleMenu = () => {
     } else {
       //create character
       let character = castle.createMage();
+      character.id = "C" + generateRandomNumber(6);
       //check gold
       if (player.castle.gold >= character.cost) {
         //Add character to player
@@ -1635,6 +2220,7 @@ let castleMenu = () => {
     } else {
       //create character
       let character = castle.createSamurai();
+      character.id = "C" + generateRandomNumber(6);
       //check gold
       if (player.castle.gold >= character.cost) {
         //Add character to player
@@ -1664,10 +2250,12 @@ let castleMenu = () => {
         <div class="subMenu" id="spySubMenu">
           <a href="#spySubMenu">
             <div>
-              <i class="fas fa-heart"></i> 2 <i class="fas fa-money-bill-alt"></i> 5 <i class="fas fa-boxes"></i> 10
+              <i class="fas fa-heart"></i> 2 
+              <i class="fas fa-money-bill-alt"></i> 5 
+              <i class="fas fa-boxes"></i> 10
             </div>
             <div>
-              Attack: 1 Defense: 1 Movement: 5 Range: 3</div>
+              Attack: 1 Defense: 1 Movement: 5 Range: 3
             </div>
           </a>
         </div>
@@ -1683,6 +2271,7 @@ let castleMenu = () => {
     } else {
       //create character
       let character = castle.createSpy();
+      character.id = "C" + generateRandomNumber(6);
       //check gold
       if (player.castle.gold >= character.cost) {
         //Add character to player
@@ -1738,21 +2327,30 @@ let characterMenu = troopId => {
       `<div id="itemMethods" class="accordionMenu"></div>`
     );
     $("#itemAttributes").append(`
-          <p> ${character.sprite} ${character.type} </p>
+          <li id=characterTitle> 
+            ${character.sprite} ${character.type}
+           </li>
+          <br>
           <li>
-          <i class="fas fa-heart"></i> HP: ${character.healthPoints}
+            <i class="fas fa-heart"></i> HP: ${character.healthPoints}
           </li> 
           <li>
-          Attack: ${character.attack}
+            Attack: ${character.attack}
+          </li> 
+          <li>
+            Already attacked: ${character.attacked}
           </li> 
           <li>
           Defense: ${character.defense}
           </li> 
           <li>
-          Movements: ${character.movements}
+            Movements: ${character.movesLeft}
           </li> 
           <li>
-          Range: ${character.range}
+            Range: ${character.range}
+          </li> 
+          <li>
+           Gems: ${character.gems}
           </li> 
     
     
@@ -1775,7 +2373,7 @@ let characterMenu = troopId => {
     </li>
   `);
     $("#movementButton, #movementSubMenu").click(function() {
-      if (player.moves != 0) {
+      if (player.moves > 0 && character.movesLeft > 0) {
         //Highlight moves
         //Set selected character to local storage
         localStorage.setItem("selectedCharacter", JSON.stringify(character));
@@ -1783,7 +2381,7 @@ let characterMenu = troopId => {
         removePossibleMoves();
         //highlight possible moves
         ////Define available moves
-        let smallest = getSmallestNumber(player.moves, character.movements);
+        let smallest = getSmallestNumber(player.moves, character.movesLeft);
         highlightPossibleMoves(currentCellNumber, smallest);
         //add event listener to possible moves
         moveTroop(currentCell);
@@ -1814,17 +2412,20 @@ let characterMenu = troopId => {
     `);
     $("#attackButton, #attackSubMenu").click(function() {
       //**** Attack ****/
+      if (!character.attacked) {
+        //Set selected character to local storage
+        localStorage.setItem("selectedCharacter", JSON.stringify(character));
 
-      //Set selected character to local storage
-      localStorage.setItem("selectedCharacter", JSON.stringify(character));
+        //clean board
+        removePossibleAttacks();
 
-      //clean board
-      removePossibleAttacks();
+        //highlight possible attack
+        highlightPossibleAttacks(currentCellNumber, character.range);
 
-      //highlight possible attack
-      highlightPossibleAttacks(currentCellNumber, character.range);
-
-      attack(currentCellNumber, character);
+        attack(currentCellNumber, character);
+      } else {
+        callAlert("warning", "Woops ", "Character already attacked");
+      }
     });
 
     //Use power up
@@ -1845,7 +2446,7 @@ let characterMenu = troopId => {
         <div class="subMenu" id="powerUpSubMenu">
           <a href="#powerUpSubMenu">
             <div>
-              Poweru-Up: ${powerUpTitle}
+              Power-Up: ${powerUpTitle}
             </div>
           </a>
         </div>
@@ -1944,6 +2545,10 @@ $(`#playGameButton`).click(showGameSetupForm);
 
 //Start game function
 let startGame = () => {
+  setInterval(function() {
+    startTimer();
+  }, 1000);
+
   $(`#startGameButton`).hide();
   //Get amount of palyers from form
   let playerAmount;
@@ -1985,9 +2590,11 @@ let playerItemSetup = () => {
   let currentPlayer = localStorage.getItem("currentPlayer");
   //Highlight playerts items
 
-  let list = $(`[owner="${currentPlayer}"]`);
+  let myItems = $(`[owner="${currentPlayer}"]`);
+  let castles = $(`[itemType="${"castleItem"}"]`);
 
-  for (const item of list) {
+  //Go to respective menu if current player item is clicked
+  for (const item of myItems) {
     item.classList.add("currentPlayerItem");
     let itemType = $(item).attr("itemType");
     let troopId = $(item).attr("troopId");
@@ -2045,6 +2652,17 @@ let playerItemSetup = () => {
         break;
     }
   }
+
+  //Go to respective menu if enemy castle is clicked
+  for (const item of castles) {
+    let owner = $(item).attr("owner");
+
+    if (owner != currentPlayer) {
+      $(item).click(function() {
+        enemyCastleMenu(owner, item);
+      });
+    }
+  }
 };
 
 let updateMovesLeft = moves => {
@@ -2071,6 +2689,7 @@ let playTurn = () => {
   showPlayerData();
   playerItemSetup();
   restoreCharacterStats();
+  checkSpies();
   addToolTip();
   castleMenu();
 };
@@ -2094,7 +2713,24 @@ let restoreCharacterStats = () => {
             if (troop.id == memento.id) {
               troop.attack = memento.attack;
               troop.defense = memento.defense;
+              troop.movesLeft = memento.movements;
+              troop.attacked = memento.attacked;
             }
+          }
+        }
+      }
+    } else {
+      //item is castle
+      //check castle constructions
+      for (const memento of careTaker.list) {
+        for (const construction of player.castle.catapults) {
+          if (construction.id == memento.id) {
+            construction.attacked = memento.attacked;
+          }
+        }
+        for (const construction of player.castle.crossbows) {
+          if (construction.id == memento.id) {
+            construction.attacked = memento.attacked;
           }
         }
       }
@@ -2105,6 +2741,8 @@ let restoreCharacterStats = () => {
 
 //change turns
 let changeTurn = () => {
+  minutes = 1;
+  seconds = 00;
   refreshBoard();
 
   //   remove current player items
@@ -2132,13 +2770,63 @@ let changeTurn = () => {
   playTurn();
 };
 
-$(`#docButton`).click(function() {
-  changeTurn();
-  //console.log(getCurrentRow(21));
-});
+/************************************************************
+ * Timer
+ ***********************************************************/
+// setInterval(function() {
+//   startTimer();
+// }, 1000);
+
+let startTimer = () => {
+  seconds--;
+
+  if (seconds < 0) {
+    seconds = 59;
+    minutes--;
+  }
+
+  if (minutes <= 0 && seconds <= 0) {
+    $(".timer").html("Time out!");
+    changeTurn();
+  } else {
+    if (minutes < 10 && seconds < 10) {
+      $(".timer").addClass("timerEnding");
+      $(".timer").html(
+        `<i class="fas fa-hourglass-half"></i> 0${minutes}:0${seconds}`
+      );
+    } else if (minutes < 10) {
+      $(".timer").html(
+        `<i class="fas fa-hourglass-half"></i> 0${minutes}:${seconds}`
+      );
+    } else if (seconds < 10) {
+      $(".timer").html(
+        `<i class="fas fa-hourglass-half"></i> ${minutes}:0${seconds}`
+      );
+    }
+  }
+};
 
 /************************************************************
  * Global variables
  ***********************************************************/
 
 const careTaker = new CareTaker();
+
+let minutes = 1;
+let seconds = 0;
+
+let swapStyleSheet = sheet => {
+  $("#pageStyle").attr("href", sheet);
+};
+
+$(`#docButton`).click(function() {
+  swapStyleSheet("css/style2.css");
+  // changeTurn();
+  //console.log(getCurrentRow(21));
+});
+
+$(`#manualButton`).click(function() {
+  swapStyleSheet("css/style.css");
+  // changeTurn();
+  //console.log(getCurrentRow(21));
+});

@@ -38,20 +38,40 @@
 -- refresh stats after the use of power up * Posible Pattern: decorator  ✓ 
 -- make sure character stats go back to norma after power up turn finishes Posible Pattern: Memento  ✓ 
 
+- add amount of gems to character menu... check tooltip too ✓ 
+- make sure characters can only attack once ✓
+- make sure character only get to move once ✓
+
+- create timer per turn ✓
+
+- construction should be able to attack ✓
+
+- add gold to caste when troop enters caste ✓
+
+- Hide enemy spies: ✓
+1) get my castle location✓
+2) get all enemy spies ✓
+3) for each enemy Spy: ✓
+4) if distance between castle and enemy spy a <= 5; ✓
+5) Replace cell html with cell column number ✓
+
+- costructions should only attack once ✓
+-- get into enemy castle and steal gold ✓
+
+
 TODO:
 
-- make sure characters can only attack once 
-- make sure character only get to move once 
-- create timer per turn
-- construction should take 30 seconds to build?
+- troops shouldn't deploy to another player item
 
-- troop kill
--- when a character kills a troop it keeps its gems
+- construction should take 30 seconds to build ✓ Maso... Error un timeout activa el resto. No estan separados...
 
-- Spy: Everything
+-- when a character kills a troop it keeps its gems *
 
 -- Add: YOU WON when someone wins.. create: checkWin();
 
+- Sockets: Multiplayer
+
+- Documentation
 
 -------------------
 Preguntas:

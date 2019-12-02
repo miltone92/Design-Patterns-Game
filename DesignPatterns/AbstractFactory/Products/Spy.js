@@ -15,6 +15,8 @@ var Spy = (function () {
         this.sprite = "<i class=\"fas fa-user-secret\"></i>";
         this.powerUp = null;
         this.gems = 0;
+        this.attacked = false;
+        this.movesLeft = 5;
         this.turnInvisible = function () {
             _this.invisible = true;
         };
@@ -22,7 +24,7 @@ var Spy = (function () {
         };
     }
     Spy.prototype.saveMemento = function () {
-        throw new Error("Method not implemented.");
+        return new Memento(this);
     };
     return Spy;
 }());

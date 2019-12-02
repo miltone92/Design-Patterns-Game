@@ -3,6 +3,8 @@ var Memento = (function () {
         this.defense = character.defense;
         this.attack = character.attack;
         this.id = character.id;
+        this.movements = character.movements;
+        this.attacked = character.attacked;
     }
     return Memento;
 }());

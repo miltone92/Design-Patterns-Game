@@ -12,8 +12,10 @@ class Assassin implements AbstractProduct {
   sprite = `<i class="fas fa-skull-crossbones"></i>`;
   powerUp: any = null;
   gems = 0;
+  attacked = false;
+  movesLeft = 4;
 
-  saveMemento(): null {
-    throw new Error("Method not implemented.");
+  saveMemento(): any {
+    return new Memento(this);
   }
 }

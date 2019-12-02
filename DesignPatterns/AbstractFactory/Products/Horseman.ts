@@ -12,8 +12,10 @@ class Horseman implements AbstractProduct {
   sprite = `<i class="fas fa-horse"></i>`;
   powerUp: any = null;
   gems = 0;
+  attacked = false;
+  movesLeft = 6;
 
-  saveMemento(): null {
-    throw new Error("Method not implemented.");
+  saveMemento(): any {
+    return new Memento(this);
   }
 }

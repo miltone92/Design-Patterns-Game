@@ -13,9 +13,11 @@ var Assassin = (function () {
         this.sprite = "<i class=\"fas fa-skull-crossbones\"></i>";
         this.powerUp = null;
         this.gems = 0;
+        this.attacked = false;
+        this.movesLeft = 4;
     }
     Assassin.prototype.saveMemento = function () {
-        throw new Error("Method not implemented.");
+        return new Memento(this);
     };
     return Assassin;
 }());

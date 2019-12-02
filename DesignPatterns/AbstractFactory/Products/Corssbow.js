@@ -7,9 +7,10 @@ var Crossbow = (function () {
         this.cost = 5;
         this.id = "";
         this.owner = "";
+        this.attacked = false;
     }
     Crossbow.prototype.saveMemento = function () {
-        throw new Error("Method not implemented.");
+        return new Memento(this);
     };
     return Crossbow;
 }());

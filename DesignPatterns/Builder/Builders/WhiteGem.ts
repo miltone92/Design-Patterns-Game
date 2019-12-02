@@ -1,14 +1,14 @@
-class GreenGem implements Builder {
+class WhiteGem implements Builder {
   gem: any;
   getGem() {
-    throw new Error("Method not implemented.");
+    return this.gem;
   }
   createGem() {
-    throw new Error("Method not implemented.");
+    this.gem = new Gem();
   }
 
   buildColor() {
-    this.gem.setColor("Green");
+    this.gem.setColor("White");
   }
   buildSprite() {
     this.gem.setSprite(`<i class="far fa-gem"></i>`);

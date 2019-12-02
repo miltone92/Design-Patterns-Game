@@ -17,8 +17,10 @@ class Archer implements AbstractProduct {
   sprite = `<i class="fas fa-bullseye"></i>`;
   powerUp: any = null;
   gems = 0;
+  attacked = false;
+  movesLeft = 3;
 
-  saveMemento(): null {
-    throw new Error("Method not implemented.");
+  saveMemento(): any {
+    return new Memento(this);
   }
 }

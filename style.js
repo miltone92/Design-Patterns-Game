@@ -11,7 +11,7 @@ let openSlideMenu = () => {
 
 let closeSlideMenu = () => {
   let sideMenu = document.getElementById("side-menu");
-  sideMenu.style.marginLeft = "-250px";
+  sideMenu.style.marginLeft = "-240px";
   let openSlideButton = document.getElementById("openSlideButton");
   openSlideButton.style.display = "block";
   openSlideButton.style.transition = "0.8s";

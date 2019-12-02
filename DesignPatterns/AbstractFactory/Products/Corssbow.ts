@@ -16,8 +16,9 @@ class Crossbow implements AbstractProduct {
   cost = 5;
   id = "";
   owner = "";
+  attacked = false;
 
-  saveMemento(): null {
-    throw new Error("Method not implemented.");
+  saveMemento(): any {
+    return new Memento(this);
   }
 }

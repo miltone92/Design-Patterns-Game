@@ -2,10 +2,10 @@ class BlueGem implements Builder {
   gem: any;
 
   getGem() {
-    throw new Error("Method not implemented.");
+    return this.gem;
   }
   createGem() {
-    throw new Error("Method not implemented.");
+    this.gem = new Gem();
   }
 
   buildColor() {

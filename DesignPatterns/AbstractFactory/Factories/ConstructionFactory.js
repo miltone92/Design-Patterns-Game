@@ -7,7 +7,7 @@ var ConstructionFactory = (function () {
             case "Castle":
                 construction = new Castle();
                 break;
-            case "Corossbow":
+            case "Crossbow":
                 construction = new Crossbow();
                 break;
             case "Catapult":

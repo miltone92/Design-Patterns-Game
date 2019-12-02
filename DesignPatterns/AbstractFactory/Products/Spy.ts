@@ -27,6 +27,8 @@ class Spy implements AbstractProduct {
   sprite = `<i class="fas fa-user-secret"></i>`;
   powerUp: any = null;
   gems = 0;
+  attacked = false;
+  movesLeft = 5;
 
   turnInvisible = () => {
     this.invisible = true;
@@ -36,7 +38,7 @@ class Spy implements AbstractProduct {
     //todo
   };
 
-  saveMemento(): null {
-    throw new Error("Method not implemented.");
+  saveMemento(): any {
+    return new Memento(this);
   }
 }

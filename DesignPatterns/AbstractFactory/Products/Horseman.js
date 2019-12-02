@@ -13,9 +13,11 @@ var Horseman = (function () {
         this.sprite = "<i class=\"fas fa-horse\"></i>";
         this.powerUp = null;
         this.gems = 0;
+        this.attacked = false;
+        this.movesLeft = 6;
     }
     Horseman.prototype.saveMemento = function () {
-        throw new Error("Method not implemented.");
+        return new Memento(this);
     };
     return Horseman;
 }());

@@ -57,20 +57,29 @@ class Castle implements AbstractProduct {
   crossbows: (Castle | Crossbow | Catapult)[] = []; // max 2
   catapults: (Castle | Crossbow | Catapult)[] = []; // max 1
   graphic = `<i class="fab fa-fort-awesome"></i>`;
+  enemies: (
+    | Archer
+    | Samurai
+    | Berserker
+    | Mage
+    | Assassin
+    | Horseman
+    | Spy
+  )[] = [];
 
   //Prototypes
   createCatapult() {
     let factory = new ConstructionFactory();
     let construction = factory.createConstruction("Catapult");
-    construction.id = "C" + generateRandomNumber(6);
+    // construction.id = "C" + generateRandomNumber(6);
     this.catapults.push(construction);
     return construction;
   }
 
   createCrossbow() {
     let factory = new ConstructionFactory();
-    let construction = factory.createConstruction("Corossbow");
-    construction.id = "C" + generateRandomNumber(6);
+    let construction = factory.createConstruction("Crossbow");
+    // construction.id = "C" + generateRandomNumber(6);
     this.crossbows.push(construction);
     return construction;
   }
@@ -78,7 +87,7 @@ class Castle implements AbstractProduct {
   createArcher() {
     let factory = new TroopFactory();
     let character = factory.createCharacter("Archer");
-    character.id = "C" + generateRandomNumber(6);
+    // character.id = "C" + generateRandomNumber(6);
     this.troops.push(character);
     return character;
   }
@@ -86,7 +95,7 @@ class Castle implements AbstractProduct {
   createSamurai() {
     let factory = new TroopFactory();
     let character = factory.createCharacter("Samurai");
-    character.id = "C" + generateRandomNumber(6);
+    // character.id = "C" + generateRandomNumber(6);
     this.troops.push(character);
     return character;
   }
@@ -94,7 +103,7 @@ class Castle implements AbstractProduct {
   createBerserker() {
     let factory = new TroopFactory();
     let character = factory.createCharacter("Berserker");
-    character.id = "C" + generateRandomNumber(6);
+    // character.id = "C" + generateRandomNumber(6);
     this.troops.push(character);
     return character;
   }
@@ -102,7 +111,7 @@ class Castle implements AbstractProduct {
   createMage() {
     let factory = new TroopFactory();
     let character = factory.createCharacter("Mage");
-    character.id = "C" + generateRandomNumber(6);
+    // character.id = "C" + generateRandomNumber(6);
     this.troops.push(character);
     return character;
   }
@@ -110,7 +119,7 @@ class Castle implements AbstractProduct {
   createAssassin() {
     let factory = new TroopFactory();
     let character = factory.createCharacter("Assassin");
-    character.id = "C" + generateRandomNumber(6);
+    // character.id = "C" + generateRandomNumber(6);
     this.troops.push(character);
     return character;
   }
@@ -118,7 +127,7 @@ class Castle implements AbstractProduct {
   createHorseman() {
     let factory = new TroopFactory();
     let character = factory.createCharacter("Horseman");
-    character.id = "C" + generateRandomNumber(6);
+    // character.id = "C" + generateRandomNumber(6);
     this.troops.push(character);
     return character;
   }
@@ -126,7 +135,7 @@ class Castle implements AbstractProduct {
   createSpy() {
     let factory = new TroopFactory();
     let character = factory.createCharacter("Spy");
-    character.id = "C" + generateRandomNumber(6);
+    // character.id = "C" + generateRandomNumber(6);
     this.troops.push(character);
     return character;
   }

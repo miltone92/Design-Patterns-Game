@@ -2,10 +2,10 @@ var GreenGem = (function () {
     function GreenGem() {
     }
     GreenGem.prototype.getGem = function () {
-        throw new Error("Method not implemented.");
+        return this.gem;
     };
     GreenGem.prototype.createGem = function () {
-        throw new Error("Method not implemented.");
+        this.gem = new Gem();
     };
     GreenGem.prototype.buildColor = function () {
         this.gem.setColor("Green");

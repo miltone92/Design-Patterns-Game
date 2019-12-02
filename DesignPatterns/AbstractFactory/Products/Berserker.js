@@ -13,9 +13,11 @@ var Berserker = (function () {
         this.sprite = "<i class=\"fas fa-paw\"></i>";
         this.powerUp = null;
         this.gems = 0;
+        this.attacked = false;
+        this.movesLeft = 1;
     }
     Berserker.prototype.saveMemento = function () {
-        throw new Error("Method not implemented.");
+        return new Memento(this);
     };
     return Berserker;
 }());

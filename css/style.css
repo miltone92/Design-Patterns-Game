@@ -75,8 +75,8 @@ body {
   transition: 0.8s;
   /* below is optional */
   color: #fff;
-  width: 250px;
-  margin-left: -250px;
+  width: 240px;
+  margin-left: -240px;
   box-shadow: 0 0px 8px 0 rgba(0, 0, 0, 0.2), 0 0px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
@@ -122,6 +122,39 @@ body {
   background-color: transparent;
 }
 
+.castleStats {
+  display: grid;
+  grid-template-columns: auto auto;
+  font-size: 14px;
+  padding-right: 10px;
+  padding-top: 30px;
+}
+
+.enemyCastleStats {
+  display: grid;
+  grid-template-columns: auto auto;
+  font-size: 14px;
+  padding-right: 10px;
+  padding-top: 30px;
+}
+
+#characterTitle {
+  font-size: 14px;
+  padding-right: 10px;
+  padding-top: 30px;
+  text-align: center;
+  padding-left: 0px;
+}
+
+#currentPlayerData .accordionMenu .item {
+  border-top: none !important;
+}
+
+.spinner {
+  /* color: #fd9644; */
+  float: right;
+}
+
 /********************************
 * Sidemenu: Accordion submenu for attributes
 ********************************/
@@ -148,11 +181,11 @@ body {
 .accordionMenu .sidemenuButton:before {
   content: "";
   position: absolute;
-  width: 14px;
-  height: 14px;
+  width: 10px;
+  height: 10px;
   background: #2d3436;
   left: 20px;
-  bottom: -7px;
+  bottom: -5px;
   transform: rotate(45deg);
 }
 
@@ -168,6 +201,16 @@ body {
 }
 
 .accordionMenu .subMenu a {
+  padding: 3px 50px;
+  color: #000;
+  font-size: 14px;
+  margin: 4px 0;
+  position: relative;
+  display: grid;
+  grid-template-columns: auto auto;
+}
+
+.accordionMenu .subMenu p {
   display: block;
   padding: 3px 50px;
   color: #000;
@@ -204,8 +247,21 @@ body {
 ********************************/
 
 #endTurnButton:hover {
-  background-color: #161d22;
-  cursor: pointer;
+  /* cursor: pointer; */
+}
+
+/****************
+* Timer
+****************/
+
+.timer {
+  font-family: 'digital-7regular', Arial, sans-serif !important;
+  font-weight: normal;
+  font-style: normal;
+}
+
+.timerEnding {
+  color: #fd9644 !important;
 }
 
 /****************

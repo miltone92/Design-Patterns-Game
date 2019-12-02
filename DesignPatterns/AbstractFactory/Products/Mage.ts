@@ -12,8 +12,11 @@ class Mage implements AbstractProduct {
   sprite = `<i class="fas fa-hat-wizard"></i>`;
   powerUp: any = null;
   gems = 0;
+  attacked = false;
+  movesLeft = 2;
+
   //
-  saveMemento(): null {
-    throw new Error("Method not implemented.");
+  saveMemento(): any {
+    return new Memento(this);
   }
 }

@@ -13,9 +13,11 @@ var Archer = (function () {
         this.sprite = "<i class=\"fas fa-bullseye\"></i>";
         this.powerUp = null;
         this.gems = 0;
+        this.attacked = false;
+        this.movesLeft = 3;
     }
     Archer.prototype.saveMemento = function () {
-        throw new Error("Method not implemented.");
+        return new Memento(this);
     };
     return Archer;
 }());

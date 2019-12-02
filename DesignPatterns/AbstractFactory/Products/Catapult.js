@@ -7,9 +7,10 @@ var Catapult = (function () {
         this.cost = 8;
         this.id = "";
         this.owner = "";
+        this.attacked = false;
     }
     Catapult.prototype.saveMemento = function () {
-        throw new Error("Method not implemented.");
+        return new Memento(this);
     };
     return Catapult;
 }());

@@ -17,8 +17,9 @@ class Catapult implements AbstractProduct {
   cost = 8;
   id = "";
   owner = "";
+  attacked = false;
 
-  saveMemento(): null {
-    throw new Error("Method not implemented.");
+  saveMemento(): any {
+    return new Memento(this);
   }
 }
