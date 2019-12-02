@@ -1,2 +1,2 @@
-# DesignPattersGame
-Board game which implement 7 different design patterns
+# DesignPatternsGame
+Board game which implements 7 different design patterns
