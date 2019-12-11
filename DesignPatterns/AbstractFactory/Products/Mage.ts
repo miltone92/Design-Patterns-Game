@@ -1,4 +1,4 @@
-class Mage implements AbstractProduct, Subject {
+class Mage implements AbstractProduct {
   type = "Mage";
   cost = 10;
   healthPoints = 10;
@@ -19,18 +19,5 @@ class Mage implements AbstractProduct, Subject {
   //
   saveMemento(): any {
     return new Memento(this);
-  }
-
-  addObserver(o: any) {
-    this.observers.push(o);
-  }
-  notifyObservers(inventory: any) {
-    for (const o of this.observers) {
-      if (inventory >= 7) {
-        o.notify("You canno't have more than 7 characters");
-        return true;
-      }
-    }
-    return false;
   }
 }

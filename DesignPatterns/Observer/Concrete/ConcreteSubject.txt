@@ -1,1 +1,0 @@
-The concrete subject will be the every troop and construction class under the objects foler found in the Abstract Factory pattern 

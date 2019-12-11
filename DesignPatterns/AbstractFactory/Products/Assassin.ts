@@ -1,4 +1,4 @@
-class Assassin implements AbstractProduct, Subject {
+class Assassin implements AbstractProduct {
   type = "Assassin";
   cost = 5;
   healthPoints = 10;
@@ -14,22 +14,8 @@ class Assassin implements AbstractProduct, Subject {
   gems = 0;
   attacked = false;
   movesLeft = 4;
-  observers: any[] = [];
 
   saveMemento(): any {
     return new Memento(this);
-  }
-
-  addObserver(o: any) {
-    this.observers.push(o);
-  }
-  notifyObservers(inventory: any) {
-    for (const o of this.observers) {
-      if (inventory >= 7) {
-        o.notify("You canno't have more than 7 characters");
-        return true;
-      }
-    }
-    return false;
   }
 }

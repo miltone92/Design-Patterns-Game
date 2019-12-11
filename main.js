@@ -119,7 +119,14 @@ let getCurrentRow = cellNumber => {
   let numberLength = getNumberLength(cellNumber);
 
   if (numberLength > 1 && numberLength < 3) {
-    return 1 + parseInt(cellNumber.toString()[0]);
+    let num1 = parseInt(cellNumber.toString()[0]);
+    let num2 = parseInt(cellNumber.toString()[1]);
+
+    if (num2 == 0) {
+      return parseInt(cellNumber.toString()[0]);
+    } else {
+      return 1 + parseInt(cellNumber.toString()[0]);
+    }
   } else if (numberLength == 3) {
     return 10;
   } else {
@@ -1672,9 +1679,22 @@ let getInventory = () => {
   let infiltrated = 0;
 
   let castles = $(`[itemType = castleItem]`);
+
+  /**
+   * Implement iterator pattern
+   * Purpose: loop over each castle
+   */
+  let container = new ConcreteContainer();
   for (const div of castles) {
-    if ($(div).attr("owner") != currentPlayer) {
-      let enemy = $(div).attr("owner");
+    container.add(div);
+  }
+  let iterator = container.getIterator();
+  console.log(iterator);
+  while (iterator.hasMore() == true) {
+    let data = iterator.next();
+
+    if ($(data).attr("owner") != currentPlayer) {
+      let enemy = $(data).attr("owner");
       if (enemy != null) {
         let enemyPlayer = JSON.parse(localStorage.getItem(enemy));
 
@@ -1686,6 +1706,21 @@ let getInventory = () => {
       }
     }
   }
+
+  // for (const div of castles) {
+  //   if ($(div).attr("owner") != currentPlayer) {
+  //     let enemy = $(div).attr("owner");
+  //     if (enemy != null) {
+  //       let enemyPlayer = JSON.parse(localStorage.getItem(enemy));
+
+  //       for (const spy of enemyPlayer.castle.enemies) {
+  //         if (spy.owner == currentPlayer) {
+  //           infiltrated++;
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 
   let inventory =
     constructionLength + troopsLength + deployedTroopsLength + infiltrated;
@@ -2065,14 +2100,14 @@ let castleMenu = () => {
     `);
   $("#createCatapult, #catapultSubMenu").click(function() {
     /** Observer pattern */
-    let construction = castle.createCatapult();
     let observer = new Observed();
-    construction.addObserver(observer);
-    let flag = construction.notifyObservers(getInventory());
+    let inventoryManager = new InventoryManager();
+    inventoryManager.addObserver(observer);
+    let flag = inventoryManager.notifyObservers(getInventory());
     /** //END: Observer pattern */
 
     if (!flag) {
-      // let construction = castle.createCatapult();
+      let construction = castle.createCatapult();
       construction.id = "C" + generateRandomNumber(6);
       if (player.castle.gold >= construction.cost) {
         //update player's gold
@@ -2123,14 +2158,14 @@ let castleMenu = () => {
     `);
   $("#createCrossbow, #crossbowSubMenu").click(function() {
     /** Observer pattern */
-    let construction = castle.createCrossbow();
     let observer = new Observed();
-    construction.addObserver(observer);
-    let flag = construction.notifyObservers(getInventory());
+    let inventoryManager = new InventoryManager();
+    inventoryManager.addObserver(observer);
+    let flag = inventoryManager.notifyObservers(getInventory());
     /** //END: Observer pattern */
 
     if (!flag) {
-      // let construction = castle.createCrossbow();
+      let construction = castle.createCrossbow();
       construction.id = "C" + generateRandomNumber(6);
       if (player.castle.gold >= construction.cost) {
         //update player's gold
@@ -2181,14 +2216,15 @@ let castleMenu = () => {
     `);
   $("#createArcher, #archerSubMenu").click(function() {
     /** Observer pattern */
-    let character = castle.createArcher();
     let observer = new Observed();
-    character.addObserver(observer);
-    let flag = character.notifyObservers(getInventory());
+    let inventoryManager = new InventoryManager();
+    inventoryManager.addObserver(observer);
+    let flag = inventoryManager.notifyObservers(getInventory());
     /** //END: Observer pattern */
 
     if (!flag) {
       //create character
+      let character = castle.createArcher();
       character.id = "C" + generateRandomNumber(6);
       //check gold
       if (player.castle.gold >= character.cost) {
@@ -2233,15 +2269,15 @@ let castleMenu = () => {
     `);
   $("#createAssassin, #assassinSubMenu").click(function() {
     /** Observer pattern */
-    let character = castle.createAssassin();
     let observer = new Observed();
-    character.addObserver(observer);
-    let flag = character.notifyObservers(getInventory());
+    let inventoryManager = new InventoryManager();
+    inventoryManager.addObserver(observer);
+    let flag = inventoryManager.notifyObservers(getInventory());
     /** //END: Observer pattern */
 
     if (!flag) {
       //create character
-      // let character = castle.createAssassin();
+      let character = castle.createAssassin();
       character.id = "C" + generateRandomNumber(6);
       //check gold
       if (player.castle.gold >= character.cost) {
@@ -2283,15 +2319,15 @@ let castleMenu = () => {
     `);
   $("#createBerserker, #bersekerSubMenu").click(function() {
     /** Observer pattern */
-    let character = castle.createBerserker();
     let observer = new Observed();
-    character.addObserver(observer);
-    let flag = character.notifyObservers(getInventory());
+    let inventoryManager = new InventoryManager();
+    inventoryManager.addObserver(observer);
+    let flag = inventoryManager.notifyObservers(getInventory());
     /** //END: Observer pattern */
 
     if (!flag) {
       //create character
-      // let character = castle.createBerserker();
+      let character = castle.createBerserker();
       character.id = "C" + generateRandomNumber(6);
       //check gold
       if (player.castle.gold >= character.cost) {
@@ -2333,15 +2369,15 @@ let castleMenu = () => {
     `);
   $("#createHorseman, #horsemanSubMenu").click(function() {
     /** Observer pattern */
-    let character = castle.createHorseman();
     let observer = new Observed();
-    character.addObserver(observer);
-    let flag = character.notifyObservers(getInventory());
+    let inventoryManager = new InventoryManager();
+    inventoryManager.addObserver(observer);
+    let flag = inventoryManager.notifyObservers(getInventory());
     /** //END: Observer pattern */
 
     if (!flag) {
       //create character
-      // let character = castle.createHorseman();
+      let character = castle.createHorseman();
       character.id = "C" + generateRandomNumber(6);
       //check gold
       if (player.castle.gold >= character.cost) {
@@ -2385,15 +2421,15 @@ let castleMenu = () => {
     `);
   $("#createMage, #mageSubMenu").click(function() {
     /** Observer pattern */
-    let character = castle.createMage();
     let observer = new Observed();
-    character.addObserver(observer);
-    let flag = character.notifyObservers(getInventory());
+    let inventoryManager = new InventoryManager();
+    inventoryManager.addObserver(observer);
+    let flag = inventoryManager.notifyObservers(getInventory());
     /** //END: Observer pattern */
 
     if (!flag) {
       //create character
-      // let character = castle.createMage();
+      let character = castle.createMage();
       character.id = "C" + generateRandomNumber(6);
       //check gold
       if (player.castle.gold >= character.cost) {
@@ -2435,15 +2471,15 @@ let castleMenu = () => {
    `);
   $("#createSamurai, #samuraiSubMenu").click(function() {
     /** Observer pattern */
-    let character = castle.createSamurai();
     let observer = new Observed();
-    character.addObserver(observer);
-    let flag = character.notifyObservers(getInventory());
+    let inventoryManager = new InventoryManager();
+    inventoryManager.addObserver(observer);
+    let flag = inventoryManager.notifyObservers(getInventory());
     /** //END: Observer pattern */
 
     if (!flag) {
       //create character
-      // let character = castle.createSamurai();
+      let character = castle.createSamurai();
       character.id = "C" + generateRandomNumber(6);
       //check gold
       if (player.castle.gold >= character.cost) {
@@ -2487,15 +2523,15 @@ let castleMenu = () => {
     `);
   $("#createSpy, #spySubMenu").click(function() {
     /** Observer pattern */
-    let character = castle.createSpy();
     let observer = new Observed();
-    character.addObserver(observer);
-    let flag = character.notifyObservers(getInventory());
+    let inventoryManager = new InventoryManager();
+    inventoryManager.addObserver(observer);
+    let flag = inventoryManager.notifyObservers(getInventory());
     /** //END: Observer pattern */
 
     if (!flag) {
       //create character
-      // let character = castle.createSpy();
+      let character = castle.createSpy();
       character.id = "C" + generateRandomNumber(6);
       //check gold
       if (player.castle.gold >= character.cost) {
@@ -3048,15 +3084,15 @@ let swapStyleSheet = sheet => {
 
 $(`#docButton`).click(function() {
   //swapStyleSheet("css/style2.css");
-  //highlightPossibleMoves(90, 3);
-  getInventory();
+  highlightPossibleMoves(100, 3);
+  //getInventory();
   // changeTurn();
   //console.log(getCurrentRow(21));
 });
 
 $(`#manualButton`).click(function() {
   // swapStyleSheet("css/style.css");
-  console.log(getCurrentRow(33));
+  console.log(getCurrentRow(89));
   // changeTurn();
   //console.log(getCurrentRow(21));
 });
