@@ -14,7 +14,7 @@ var GreenGem = (function () {
         this.gem.setSprite("<i class=\"far fa-gem\"></i>");
     };
     GreenGem.prototype.buildValue = function () {
-        this.gem.setValue(1);
+        this.gem.setValue(3);
     };
     return GreenGem;
 }());

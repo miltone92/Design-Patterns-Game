@@ -14,6 +14,6 @@ class GreenGem implements Builder {
     this.gem.setSprite(`<i class="far fa-gem"></i>`);
   }
   buildValue() {
-    this.gem.setValue(1);
+    this.gem.setValue(3);
   }
 }

@@ -58,16 +58,21 @@
 - costructions should only attack once ✓
 -- get into enemy castle and steal gold ✓
 
+- * construction should take 30 seconds to build ✓ Maso... Error un timeout activa el resto. No estan separados...
+
+- make sure gem values ara correct when picking up ✓
+
+- troops shouldn't deploy to another player item ✓
+
+-- when a character kills a troop it keeps its gems ✓
+
 
 TODO:
 
-- troops shouldn't deploy to another player item
 
-- construction should take 30 seconds to build ✓ Maso... Error un timeout activa el resto. No estan separados...
+-- Constructions should get hit before castle ✓
 
--- when a character kills a troop it keeps its gems *
-
--- Add: YOU WON when someone wins.. create: checkWin();
+-- Add: YOU WON when someone wins.. create: checkWin(); ✓
 
 - Sockets: Multiplayer
 
@@ -97,4 +102,6 @@ R//
 //R mover terminar
 
 
-
+1. Cedula: 801290820
+2. IBAN: CR80012300929316732590
+3. Banco: Scotiabank

@@ -1,0 +1,3 @@
+Originator:
+- The concrete products of the abstract factory patter seve as the orignators.
+- The above mentioned, have a saveMemento fucntion;

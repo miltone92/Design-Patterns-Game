@@ -1,10 +1,4 @@
 class Gem {
-  // constructor(color, sprite, value) {
-  //   this.color = color;
-  //   this.sprite = sprite;
-  //   this.value = value;
-  // }
-
   color: any;
   sprite: any;
   value: any;

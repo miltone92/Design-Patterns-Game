@@ -9,6 +9,23 @@ body {
 }
 
 /****************
+* main
+****************/
+
+#main {
+  padding: 20px;
+  overflow: hidden;
+}
+
+#general {
+  /* overflow: hidden; */
+}
+
+.alert {
+  margin-bottom: 0px;
+}
+
+/****************
 * Top Navigation
 ****************/
 
@@ -262,27 +279,4 @@ body {
 
 .timerEnding {
   color: #fd9644 !important;
-}
-
-/****************
-* main
-****************/
-
-#main {
-  padding: 20px;
-  overflow: hidden;
-}
-
-#general {
-  /* overflow: hidden; */
-}
-
-.alert {
-  margin-bottom: 0px;
-}
-
-@media (max-width: 586px) {
-  .myNavbar-nav {
-    display: none;
-  }
 }

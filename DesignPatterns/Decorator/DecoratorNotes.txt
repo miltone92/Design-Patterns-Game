@@ -1,0 +1,8 @@
+Abstract Component: Found as abstract product int the Abstrac Factory Pattern
+
+
+Abstract Component (Abstract Product): defines the methods for the specific components whose responsibilities may increase in runtime. (Interface)
+Abstract Decorator (Decorated Character): maintains a reference of the abstract component. It implements AbstracProduct.
+Concrete Decorator (Attack/Defense boost/reduce): Add responsibilities to the object. (Extends decorated character)
+Concrete Compnent (Archer, assassin, etc): Defines an object to which they can be added
+responsibilities implements from Abstract Product.

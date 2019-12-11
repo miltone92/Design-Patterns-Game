@@ -8,7 +8,7 @@ no se puede colocar en ninguna otra parte del tablero.
 ● Precio: 5
 */
 
-class Crossbow implements AbstractProduct {
+class Crossbow implements AbstractProduct, Subject {
   type = "Crossbow";
   healthPoints = 3;
   attack = 2;
@@ -17,8 +17,22 @@ class Crossbow implements AbstractProduct {
   id = "";
   owner = "";
   attacked = false;
+  observers: any[] = [];
 
   saveMemento(): any {
     return new Memento(this);
+  }
+
+  addObserver(o: any) {
+    this.observers.push(o);
+  }
+  notifyObservers(inventory: any) {
+    for (const o of this.observers) {
+      if (inventory >= 7) {
+        o.notify("You canno't have more than 7 characters");
+        return true;
+      }
+    }
+    return false;
   }
 }

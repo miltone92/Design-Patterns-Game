@@ -119,7 +119,7 @@ let getCurrentRow = cellNumber => {
   let numberLength = getNumberLength(cellNumber);
 
   if (numberLength > 1 && numberLength < 3) {
-    return parseInt(cellNumber.toString()[0]);
+    return 1 + parseInt(cellNumber.toString()[0]);
   } else if (numberLength == 3) {
     return 10;
   } else {
@@ -238,7 +238,6 @@ let highlightPossibleMoves = (currentCell, availableMovement) => {
     }
 
     // //highlight possible cells below
-
     for (const cell of lis) {
       let movePosiblity = parseInt(currentCell) + (parseInt(i) + 1) * 10;
       let cellNumber = $(cell).attr("cellNumber");
@@ -251,7 +250,7 @@ let highlightPossibleMoves = (currentCell, availableMovement) => {
 
           highlightPossibleMoves(cellNumber, newMovement);
         }
-      } else if (getCurrentRow(movePosiblity) == 10 && !belowBreak) {
+      } else if (getCurrentRow(movePosiblity) == 1 && !belowBreak) {
         //This will make sure no cells get painted once the left border was reached
 
         belowBreak = true;
@@ -354,7 +353,7 @@ let highlightPossibleAttacks = (currentCell, availableMovement) => {
 
           highlightPossibleAttacks(cellNumber, newMovement);
         }
-      } else if (getCurrentRow(movePosiblity) == 10 && !belowBreak) {
+      } else if (getCurrentRow(movePosiblity) == 1 && !belowBreak) {
         //This will make sure no cells get painted once the left border was reached
 
         belowBreak = true;
@@ -519,7 +518,6 @@ let keepGem = (cell, gemType, character) => {
    */
 
   let director = new Director();
-  let builder;
 
   $(cell).removeClass(gemType);
   let gem;
@@ -695,7 +693,46 @@ let addCastles = playerAmount => {
   }
 };
 
-//addCastles(2);
+/******************************
+ * Check win / All other castles destroyed
+ *****************************/
+
+let checkWin = () => {
+  let currentPlayer = localStorage.getItem("currentPlayer");
+  let playerAmount = localStorage.getItem("playerAmount");
+  let player = JSON.parse(localStorage.getItem(currentPlayer));
+
+  let castles = $(`[itemType = castleItem]`);
+
+  for (const div of castles) {
+    // let owner = $(div).attr("owner");
+    // let destruction = $(div).attr("destroyed");
+    if (
+      $(div).attr("owner") != currentPlayer &&
+      $(div).attr("destroyed") == "true"
+    ) {
+      destroyedCastles++;
+      $(div).attr("itemType", null);
+      if (destroyedCastles == playerAmount - 1) {
+        $("#modalTitle").empty();
+        $("#modalBody").empty();
+        $("#modalFooter").empty();
+
+        $("#modalTitle").append(
+          `<i class="fas fa-trophy"></i> ${currentPlayer} wins!`
+        );
+        $("#modalBody").append(`
+            <p>Nice game!</p>
+          `);
+        $("#modalFooter").append(`
+
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Nice!</button>
+        `);
+        $("#exampleModal").modal(); //Start modal
+      }
+    }
+  }
+};
 
 /******************************
  * Add Tooltip to player item
@@ -837,96 +874,113 @@ let deployTroop = castleCellNumber => {
   let possibleMoves = $(`.availableCell`);
   for (const cell of possibleMoves) {
     $(cell).click(function() {
-      //Remove character from castle
-      let index = player.castle.troops.findIndex(
-        x => x.id == selectedCharacter.id
-      );
-      if (index > -1) {
-        player.castle.troops.splice(index, 1);
-      }
-
-      //Remove charachter from enemy player castle
-      let currentCell = $(`[cellNumber=${castleCellNumber}]`);
-      let castleOwner = $(currentCell).attr("owner");
-      let enemyPlayer = JSON.parse(localStorage.getItem(castleOwner));
-
-      if (castleOwner != currentPlayer) {
-        let index = enemyPlayer.castle.enemies.findIndex(
+      //Make sure destination cell is not a character item
+      let isPlayerItem = $(cell).hasClass("playerItem");
+      if (isPlayerItem) {
+        callAlert("warning", "Woops ", "You cannot move into a player's item");
+        //Remove on this click function from all other cells
+        for (const cell of possibleMoves) {
+          //$(cell).off();
+          $(cell)
+            .prop("onClick", null)
+            .off("click");
+        }
+        //refresh board
+        refreshBoard();
+        //refresh castle menu
+        castleMenu();
+      } else {
+        //Remove character from castle
+        let index = player.castle.troops.findIndex(
           x => x.id == selectedCharacter.id
         );
         if (index > -1) {
-          enemyPlayer.castle.enemies.splice(index, 1);
+          player.castle.troops.splice(index, 1);
         }
-        localStorage.setItem(castleOwner, JSON.stringify(enemyPlayer));
-      }
 
-      //Add character to players deployed troops
-      player.troops.push(selectedCharacter);
-      localStorage.setItem(currentPlayer, JSON.stringify(player));
+        //Remove charachter from enemy player castle
+        let currentCell = $(`[cellNumber=${castleCellNumber}]`);
+        let castleOwner = $(currentCell).attr("owner");
+        let enemyPlayer = JSON.parse(localStorage.getItem(castleOwner));
 
-      //Show on board
-      $(cell).html(selectedCharacter.sprite);
-      $(cell).addClass("playerItem");
-      $(cell).addClass("currentPlayerItem");
-      $(cell).attr("owner", currentPlayer);
-      $(cell).attr("troopId", selectedCharacter.id);
-      $(cell).attr("itemType", selectedCharacter.type);
-
-      //Clean board active moves
-      removePossibleMoves();
-
-      //Remove on this click function from all other cells
-      for (const cell of possibleMoves) {
-        //$(cell).off();
-        $(cell)
-          .prop("onClick", null)
-          .off("click");
-      }
-
-      //check if desired cell has power up
-      checkPowerUp(cell, selectedCharacter);
-      checkGems(cell, selectedCharacter);
-
-      //get amount of moves
-      let destinationCellNumber = $(cell).attr("cellNumber");
-      let cellDifference = getCellDifference(
-        castleCellNumber,
-        destinationCellNumber
-      );
-
-      //update character's moves left
-      let playerTroops = player.troops;
-
-      for (const troop of playerTroops) {
-        if (troop.id == selectedCharacter.id) {
-          troop.movesLeft -= cellDifference;
+        if (castleOwner != currentPlayer) {
+          let index = enemyPlayer.castle.enemies.findIndex(
+            x => x.id == selectedCharacter.id
+          );
+          if (index > -1) {
+            enemyPlayer.castle.enemies.splice(index, 1);
+          }
+          localStorage.setItem(castleOwner, JSON.stringify(enemyPlayer));
         }
+
+        //Add character to players deployed troops
+        player.troops.push(selectedCharacter);
+        localStorage.setItem(currentPlayer, JSON.stringify(player));
+
+        //Show on board
+        $(cell).html(selectedCharacter.sprite);
+        $(cell).addClass("playerItem");
+        $(cell).addClass("currentPlayerItem");
+        $(cell).attr("owner", currentPlayer);
+        $(cell).attr("troopId", selectedCharacter.id);
+        $(cell).attr("itemType", selectedCharacter.type);
+
+        //Clean board active moves
+        removePossibleMoves();
+
+        //Remove on this click function from all other cells
+        for (const cell of possibleMoves) {
+          //$(cell).off();
+          $(cell)
+            .prop("onClick", null)
+            .off("click");
+        }
+
+        //check if desired cell has power up
+        checkPowerUp(cell, selectedCharacter);
+        checkGems(cell, selectedCharacter);
+
+        //get amount of moves
+        let destinationCellNumber = $(cell).attr("cellNumber");
+        let cellDifference = getCellDifference(
+          castleCellNumber,
+          destinationCellNumber
+        );
+
+        //update character's moves left
+        let playerTroops = player.troops;
+
+        for (const troop of playerTroops) {
+          if (troop.id == selectedCharacter.id) {
+            troop.movesLeft -= cellDifference;
+          }
+        }
+        localStorage.setItem(currentPlayer, JSON.stringify(player));
+
+        //save character memento to restory movesLeft later (on restoreMoves())
+        let troopFactory = new TroopFactory();
+        let templateCharacter = troopFactory.createCharacter(
+          selectedCharacter.type
+        );
+        templateCharacter.id = selectedCharacter.id;
+        careTaker.add(templateCharacter.saveMemento());
+
+        localStorage.setItem(currentPlayer, JSON.stringify(player));
+
+        //refresh moves left
+        updateMovesLeft(cellDifference);
+
+        //refresh board
+        refreshBoard();
+        //remove selected character
+        localStorage.setItem("selectedCharacter", null);
+
+        //update player info
+        showPlayerData();
+
+        //refresh castel menu
+        castleMenu();
       }
-      localStorage.setItem(currentPlayer, JSON.stringify(player));
-
-      //save character memento to restory movesLeft later (on restoreMoves())
-      let troopFactory = new TroopFactory();
-      let templateCharacter = troopFactory.createCharacter(
-        selectedCharacter.type
-      );
-      templateCharacter.id = selectedCharacter.id;
-      careTaker.add(templateCharacter.saveMemento());
-
-      localStorage.setItem(currentPlayer, JSON.stringify(player));
-
-      //refresh moves left
-      updateMovesLeft(cellDifference);
-
-      //refresh board
-      refreshBoard();
-      //remove selected character
-      localStorage.setItem("selectedCharacter", null);
-
-      //update player info
-      showPlayerData();
-
-      //refresh castel menu
-      castleMenu();
     });
   }
 };
@@ -1134,6 +1188,72 @@ let moveTroop = currentCell => {
     });
   }
 };
+/******************************
+ * Attack constructions
+ *****************************/
+
+let attackConstruction = (enemyOwner, enemyPlayer, character, attack) => {
+  let enemyCastle = enemyPlayer.castle;
+
+  if (attack == null || attack == undefined) {
+    attack = character.attack;
+  }
+
+  //check to see if castle has constructions
+  if (enemyCastle.catapults.length > 0) {
+    //attack catapults first
+    enemyCastle.catapults[0].healthPoints -= attack;
+    //check to see if construction died
+    if (enemyCastle.catapults[0].healthPoints <= 0) {
+      let attackDifferece = Math.abs(enemyCastle.catapults[0].healthPoints);
+
+      //if dead remove construction from players enemy consturction
+      enemyPlayer.castle.catapults.splice(0, 1);
+      localStorage.setItem(enemyOwner, JSON.stringify(enemyPlayer));
+
+      //check attack difference
+      if (attackDifferece > 0) {
+        return attackConstruction(
+          enemyOwner,
+          enemyPlayer,
+          character,
+          attackDifferece
+        );
+      } else {
+        //call menu
+        characterMenu(character.id);
+        return true;
+      }
+    }
+  } else if (enemyCastle.crossbows.length > 0) {
+    //attack crossbows after catapults
+    enemyCastle.crossbows[0].healthPoints -= attack;
+    //check to see if construction died
+    if (enemyCastle.crossbows[0].healthPoints <= 0) {
+      let attackDifferece = Math.abs(enemyCastle.catapults[0].healthPoints);
+
+      //if dead remove construction from players enemy consturction
+      enemyPlayer.castle.crossbows.splice(0, 1);
+      localStorage.setItem(enemyOwner, JSON.stringify(enemyPlayer));
+
+      //check attack difference
+      if (attackDifferece > 0) {
+        return attackConstruction(
+          enemyOwner,
+          enemyPlayer,
+          character,
+          attackDifferece
+        );
+      } else {
+        //call menu
+        characterMenu(character.id);
+        return true;
+      }
+    }
+  } else {
+    return attack;
+  }
+};
 
 /******************************
  * Attack enemy
@@ -1172,42 +1292,77 @@ let attack = (currentCell, character) => {
       //if enemy == castle
       if ($(cell).attr("itemType") == "castleItem") {
         let enemyCastle = enemyPlayer.castle;
+        //check to see if castle has constructions
+        let attackedConstruction = attackConstruction(
+          enemyOwner,
+          enemyPlayer,
+          character
+        );
+        if (
+          attackedConstruction == true &&
+          typeof attackedConstruction == "boolean"
+        ) {
+          for (const cell of possibleAttacks) {
+            //$(cell).off();
+            $(cell)
+              .prop("onClick", null)
+              .off("click");
+          }
 
-        //reduce HP
+          //refresh board
+          refreshBoard();
 
-        enemyCastle.healthPoints -= character.attack;
+          //call menu
+          characterMenu(character.id);
+        } else {
+          //if there is no contructions left attack castle
 
-        //check to see if enemy castle died
-        if (enemyCastle.healthPoints <= 0) {
-          enemyPlayer.castle = "Destroyed";
+          //reduce castleHP
+          if (
+            typeof attackedConstruction == "number" &&
+            attackedConstruction > 0
+          ) {
+            enemyCastle.healthPoints -= attackedConstruction;
+          } else {
+            enemyCastle.healthPoints -= character.attack;
+          }
+
+          //check to see if enemy castle died
+          if (enemyCastle.healthPoints <= 0) {
+            enemyPlayer.castle = "Destroyed";
+            localStorage.setItem(enemyOwner, JSON.stringify(enemyPlayer));
+
+            //remove from board
+            $(cell).html(null);
+            $(cell).removeClass("playerItem");
+            $(cell).attr("owner", null);
+            //$(cell).attr("itemType", null);
+            $(cell).attr("destroyed", true);
+
+            $(currentCell).removeAttr("data-toggle", null);
+            $(currentCell).removeAttr("data-placement", null);
+            $(currentCell).removeAttr("data-html", null);
+            $(currentCell).removeAttr("title", null);
+            $(currentCell).removeAttr("data-original-title", null);
+
+            checkWin();
+          }
+
           localStorage.setItem(enemyOwner, JSON.stringify(enemyPlayer));
 
-          //remove from board
-          $(cell).html(null);
-          $(cell).removeClass("playerItem");
-          $(cell).attr("owner", null);
-          $(cell).attr("itemType", null);
-          $(currentCell).removeAttr("data-toggle", null);
-          $(currentCell).removeAttr("data-placement", null);
-          $(currentCell).removeAttr("data-html", null);
-          $(currentCell).removeAttr("title", null);
-          $(currentCell).removeAttr("data-original-title", null);
+          //Remove on this click function from all other cells
+          for (const cell of possibleAttacks) {
+            //$(cell).off();
+            $(cell)
+              .prop("onClick", null)
+              .off("click");
+          }
+          //refresh board
+          refreshBoard();
+
+          //call menu
+          characterMenu(character.id);
         }
-
-        localStorage.setItem(enemyOwner, JSON.stringify(enemyPlayer));
-
-        //Remove on this click function from all other cells
-        for (const cell of possibleAttacks) {
-          //$(cell).off();
-          $(cell)
-            .prop("onClick", null)
-            .off("click");
-        }
-        //refresh board
-        refreshBoard();
-
-        //call menu
-        characterMenu(character.id);
       } //if enemy == troop
       else {
         let enemyTroopId = $(cell).attr("troopId");
@@ -1234,16 +1389,38 @@ let attack = (currentCell, character) => {
 
             //check to see if enemy character died
             if (enemyTroop.healthPoints <= 0) {
+              //create variable to store dead enemy's gems
+              let enemyGems;
+              //define available gem space of attacking character
+              let availableGemSpace =
+                character.storageCapacity - character.gems;
+
               //Remove enemy character from players enemy troops
               let index = enemyPlayer.troops.findIndex(
                 x => x.id == enemyTroop.id
               );
               if (index > -1) {
+                enemyGems = enemyPlayer.troops[index].gems;
                 enemyPlayer.troops.splice(index, 1);
                 localStorage.setItem(enemyOwner, JSON.stringify(enemyPlayer));
               }
-              //remove from board
-              $(cell).html(null);
+
+              //add gems to attacking character
+              if (enemyGems >= availableGemSpace) {
+                character.gems += availableGemSpace;
+              } else {
+                character.gems += enemyGems;
+              }
+
+              for (const troop of playerTroops) {
+                if (troop.id == character.id) {
+                  troop.gems = character.gems;
+                }
+              }
+              localStorage.setItem(currentPlayer, JSON.stringify(player));
+
+              //remove enemy from board
+              $(cell).html(getCurrentColumn($(cell).attr("cellNumber")));
               $(cell).removeClass("playerItem");
               $(cell).removeClass("currentPlayerItem");
               $(cell).attr("owner", null);
@@ -1475,6 +1652,46 @@ let checkSpies = () => {
   }
 };
 
+let getInventory = () => {
+  //get amount of players
+  let playerAmount = localStorage.getItem("playerAmount");
+
+  let currentPlayer = localStorage.getItem(`currentPlayer`);
+  let player = JSON.parse(localStorage.getItem(`${currentPlayer}`));
+
+  //get constructions lenghts
+  let catapultsLength = player.castle.catapults.length;
+  let crossbowsLenght = player.castle.crossbows.length;
+  let constructionLength = catapultsLength + crossbowsLenght;
+  //Get troop length - within castlee
+  let troopsLength = player.castle.troops.length;
+  //Get troop length - deployed
+  let deployedTroopsLength = player.troops.length;
+
+  //Search for current player troops in enemy castles
+  let infiltrated = 0;
+
+  let castles = $(`[itemType = castleItem]`);
+  for (const div of castles) {
+    if ($(div).attr("owner") != currentPlayer) {
+      let enemy = $(div).attr("owner");
+      if (enemy != null) {
+        let enemyPlayer = JSON.parse(localStorage.getItem(enemy));
+
+        for (const spy of enemyPlayer.castle.enemies) {
+          if (spy.owner == currentPlayer) {
+            infiltrated++;
+          }
+        }
+      }
+    }
+  }
+
+  let inventory =
+    constructionLength + troopsLength + deployedTroopsLength + infiltrated;
+  console.log(inventory);
+  return inventory;
+};
 /************************************************************
  * Dashboard Setup
  ***********************************************************/
@@ -1847,14 +2064,15 @@ let castleMenu = () => {
         
     `);
   $("#createCatapult, #catapultSubMenu").click(function() {
-    if (constructionLength >= 3) {
-      callAlert(
-        "danger",
-        "Wooops",
-        "You can only have three constructions at a time!"
-      );
-    } else {
-      let construction = castle.createCatapult();
+    /** Observer pattern */
+    let construction = castle.createCatapult();
+    let observer = new Observed();
+    construction.addObserver(observer);
+    let flag = construction.notifyObservers(getInventory());
+    /** //END: Observer pattern */
+
+    if (!flag) {
+      // let construction = castle.createCatapult();
       construction.id = "C" + generateRandomNumber(6);
       if (player.castle.gold >= construction.cost) {
         //update player's gold
@@ -1904,14 +2122,15 @@ let castleMenu = () => {
       </li>
     `);
   $("#createCrossbow, #crossbowSubMenu").click(function() {
-    if (constructionLength >= 3) {
-      callAlert(
-        "danger",
-        "Wooops",
-        "You can only have three constructions at a time!"
-      );
-    } else {
-      let construction = castle.createCrossbow();
+    /** Observer pattern */
+    let construction = castle.createCrossbow();
+    let observer = new Observed();
+    construction.addObserver(observer);
+    let flag = construction.notifyObservers(getInventory());
+    /** //END: Observer pattern */
+
+    if (!flag) {
+      // let construction = castle.createCrossbow();
       construction.id = "C" + generateRandomNumber(6);
       if (player.castle.gold >= construction.cost) {
         //update player's gold
@@ -1961,15 +2180,15 @@ let castleMenu = () => {
       </li>
     `);
   $("#createArcher, #archerSubMenu").click(function() {
-    if (troopsLength >= 7) {
-      callAlert(
-        "danger",
-        "Wooops",
-        "You can only have seven troops at a time!"
-      );
-    } else {
+    /** Observer pattern */
+    let character = castle.createArcher();
+    let observer = new Observed();
+    character.addObserver(observer);
+    let flag = character.notifyObservers(getInventory());
+    /** //END: Observer pattern */
+
+    if (!flag) {
       //create character
-      let character = castle.createArcher();
       character.id = "C" + generateRandomNumber(6);
       //check gold
       if (player.castle.gold >= character.cost) {
@@ -2013,15 +2232,16 @@ let castleMenu = () => {
       </li>
     `);
   $("#createAssassin, #assassinSubMenu").click(function() {
-    if (troopsLength >= 7) {
-      callAlert(
-        "danger",
-        "Wooops",
-        "You can only have seven troops at a time!"
-      );
-    } else {
+    /** Observer pattern */
+    let character = castle.createAssassin();
+    let observer = new Observed();
+    character.addObserver(observer);
+    let flag = character.notifyObservers(getInventory());
+    /** //END: Observer pattern */
+
+    if (!flag) {
       //create character
-      let character = castle.createAssassin();
+      // let character = castle.createAssassin();
       character.id = "C" + generateRandomNumber(6);
       //check gold
       if (player.castle.gold >= character.cost) {
@@ -2062,15 +2282,16 @@ let castleMenu = () => {
       </li>
     `);
   $("#createBerserker, #bersekerSubMenu").click(function() {
-    if (troopsLength >= 7) {
-      callAlert(
-        "danger",
-        "Wooops",
-        "You can only have seven troops at a time!"
-      );
-    } else {
+    /** Observer pattern */
+    let character = castle.createBerserker();
+    let observer = new Observed();
+    character.addObserver(observer);
+    let flag = character.notifyObservers(getInventory());
+    /** //END: Observer pattern */
+
+    if (!flag) {
       //create character
-      let character = castle.createBerserker();
+      // let character = castle.createBerserker();
       character.id = "C" + generateRandomNumber(6);
       //check gold
       if (player.castle.gold >= character.cost) {
@@ -2111,15 +2332,16 @@ let castleMenu = () => {
     </li>
     `);
   $("#createHorseman, #horsemanSubMenu").click(function() {
-    if (troopsLength >= 7) {
-      callAlert(
-        "danger",
-        "Wooops",
-        "You can only have seven troops at a time!"
-      );
-    } else {
+    /** Observer pattern */
+    let character = castle.createHorseman();
+    let observer = new Observed();
+    character.addObserver(observer);
+    let flag = character.notifyObservers(getInventory());
+    /** //END: Observer pattern */
+
+    if (!flag) {
       //create character
-      let character = castle.createHorseman();
+      // let character = castle.createHorseman();
       character.id = "C" + generateRandomNumber(6);
       //check gold
       if (player.castle.gold >= character.cost) {
@@ -2162,15 +2384,16 @@ let castleMenu = () => {
       </li>
     `);
   $("#createMage, #mageSubMenu").click(function() {
-    if (troopsLength >= 7) {
-      callAlert(
-        "danger",
-        "Wooops",
-        "You can only have seven troops at a time!"
-      );
-    } else {
+    /** Observer pattern */
+    let character = castle.createMage();
+    let observer = new Observed();
+    character.addObserver(observer);
+    let flag = character.notifyObservers(getInventory());
+    /** //END: Observer pattern */
+
+    if (!flag) {
       //create character
-      let character = castle.createMage();
+      // let character = castle.createMage();
       character.id = "C" + generateRandomNumber(6);
       //check gold
       if (player.castle.gold >= character.cost) {
@@ -2211,15 +2434,16 @@ let castleMenu = () => {
      </li>
    `);
   $("#createSamurai, #samuraiSubMenu").click(function() {
-    if (troopsLength >= 7) {
-      callAlert(
-        "danger",
-        "Wooops",
-        "You can only have seven troops at a time!"
-      );
-    } else {
+    /** Observer pattern */
+    let character = castle.createSamurai();
+    let observer = new Observed();
+    character.addObserver(observer);
+    let flag = character.notifyObservers(getInventory());
+    /** //END: Observer pattern */
+
+    if (!flag) {
       //create character
-      let character = castle.createSamurai();
+      // let character = castle.createSamurai();
       character.id = "C" + generateRandomNumber(6);
       //check gold
       if (player.castle.gold >= character.cost) {
@@ -2262,15 +2486,16 @@ let castleMenu = () => {
       </li>
     `);
   $("#createSpy, #spySubMenu").click(function() {
-    if (troopsLength >= 7) {
-      callAlert(
-        "danger",
-        "Wooops",
-        "You can only have seven troops at a time!"
-      );
-    } else {
+    /** Observer pattern */
+    let character = castle.createSpy();
+    let observer = new Observed();
+    character.addObserver(observer);
+    let flag = character.notifyObservers(getInventory());
+    /** //END: Observer pattern */
+
+    if (!flag) {
       //create character
-      let character = castle.createSpy();
+      // let character = castle.createSpy();
       character.id = "C" + generateRandomNumber(6);
       //check gold
       if (player.castle.gold >= character.cost) {
@@ -2810,23 +3035,28 @@ let startTimer = () => {
  * Global variables
  ***********************************************************/
 
+//Part of memento pattern: care taker
 const careTaker = new CareTaker();
 
 let minutes = 1;
 let seconds = 0;
+let destroyedCastles = 0;
 
 let swapStyleSheet = sheet => {
   $("#pageStyle").attr("href", sheet);
 };
 
 $(`#docButton`).click(function() {
-  swapStyleSheet("css/style2.css");
+  //swapStyleSheet("css/style2.css");
+  //highlightPossibleMoves(90, 3);
+  getInventory();
   // changeTurn();
   //console.log(getCurrentRow(21));
 });
 
 $(`#manualButton`).click(function() {
-  swapStyleSheet("css/style.css");
+  // swapStyleSheet("css/style.css");
+  console.log(getCurrentRow(33));
   // changeTurn();
   //console.log(getCurrentRow(21));
 });

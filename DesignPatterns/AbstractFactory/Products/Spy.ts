@@ -12,7 +12,7 @@ para poder robar).
 
 */
 
-class Spy implements AbstractProduct {
+class Spy implements AbstractProduct, Subject {
   type = "Spy";
   cost = 5;
   healthPoints = 2;
@@ -29,16 +29,22 @@ class Spy implements AbstractProduct {
   gems = 0;
   attacked = false;
   movesLeft = 5;
-
-  turnInvisible = () => {
-    this.invisible = true;
-  };
-
-  steal = () => {
-    //todo
-  };
+  observers: any[] = [];
 
   saveMemento(): any {
     return new Memento(this);
+  }
+
+  addObserver(o: any) {
+    this.observers.push(o);
+  }
+  notifyObservers(inventory: any) {
+    for (const o of this.observers) {
+      if (inventory >= 7) {
+        o.notify("You canno't have more than 7 characters");
+        return true;
+      }
+    }
+    return false;
   }
 }

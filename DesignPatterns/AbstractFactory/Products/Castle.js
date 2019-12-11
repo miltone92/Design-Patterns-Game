@@ -2,7 +2,7 @@ var Castle = (function () {
     function Castle() {
         this.type = "Castle";
         this.healthPoints = 30;
-        this.gold = 20;
+        this.gold = 90;
         this.troops = [];
         this.crossbows = [];
         this.catapults = [];
