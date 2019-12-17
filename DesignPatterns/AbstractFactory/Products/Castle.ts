@@ -44,7 +44,7 @@ class Castle implements AbstractProduct {
   owner: any;
   type = "Castle";
   healthPoints = 30;
-  gold = 90;
+  gold = 20;
   troops: (
     | Archer
     | Samurai
