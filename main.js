@@ -1016,8 +1016,8 @@ let moveTroop = currentCell => {
         currentCellNumber,
         destinationCellNumber
       );
-      //verify the cell you are moving for is not some else player item
-      if (cellOwner != currentPlayer && !isPlayerItem) {
+      //verify the cell you are moving for is a not a playet itrem
+      if (cellOwner == currentPlayer && cellType == "castleItem") {
         //remove from current cell
         $(currentCell).html(
           getCurrentColumn($(currentCell).attr("cellNumber"))
@@ -1034,107 +1034,51 @@ let moveTroop = currentCell => {
         $(currentCell).removeAttr("data-original-title", null);
 
         //check if desired cell is home castle
-        if (cellOwner == currentPlayer && cellType == "castleItem") {
-          enterCastle();
-          //Remove on this click function from all other cells
-          for (const cell of possibleMoves) {
-            //$(cell).off();
-            $(cell)
-              .prop("onClick", null)
-              .off("click");
-          }
 
-          //update character's moves left
-          let playerTroops = player.troops;
-
-          for (const troop of playerTroops) {
-            if (troop.id == selectedCharacter.id) {
-              troop.movesLeft -= cellDifference;
-            }
-          }
-
-          localStorage.setItem(currentPlayer, JSON.stringify(player));
-
-          //save character memento to restory movesLeft later (on restoreMoves())
-          let troopFactory = new TroopFactory();
-          let templateCharacter = troopFactory.createCharacter(
-            selectedCharacter.type
-          );
-          templateCharacter.id = selectedCharacter.id;
-          careTaker.add(templateCharacter.saveMemento());
-
-          //refresh moves left
-          updateMovesLeft(cellDifference);
-
-          //refresh board
-          refreshBoard();
-
-          //refresh castle menu
-          castleMenu();
-
-          //remove selected character
-          localStorage.setItem("selectedCharacter", null);
-
-          //update player info
-          showPlayerData();
-
-          // if desired cell is not home castle
-        } else {
-          //Show on board
-          $(cell).html(selectedCharacter.sprite);
-          $(cell).addClass("playerItem");
-          $(cell).addClass("currentPlayerItem");
-          $(cell).attr("owner", currentPlayer);
-          $(cell).attr("troopId", selectedCharacter.id);
-          $(cell).attr("itemType", selectedCharacter.type);
-
-          //Clean board active moves
-          // removePossibleMoves();
-
-          //Remove on this click function from all other cells
-          for (const cell of possibleMoves) {
-            //$(cell).off();
-            $(cell)
-              .prop("onClick", null)
-              .off("click");
-          }
-
-          //check if desired cell has power up
-          checkPowerUp(cell, selectedCharacter);
-          checkGems(cell, selectedCharacter);
-
-          //update character's moves left
-          let playerTroops = player.troops;
-
-          for (const troop of playerTroops) {
-            if (troop.id == selectedCharacter.id) {
-              troop.movesLeft -= cellDifference;
-            }
-          }
-          localStorage.setItem(currentPlayer, JSON.stringify(player));
-
-          //save character memento to restory movesLeft later (on restoreMoves())
-          let troopFactory = new TroopFactory();
-          let templateCharacter = troopFactory.createCharacter(
-            selectedCharacter.type
-          );
-          templateCharacter.id = selectedCharacter.id;
-          careTaker.add(templateCharacter.saveMemento());
-
-          //refresh moves left
-          updateMovesLeft(cellDifference);
-
-          //refresh board
-          refreshBoard();
-
-          characterMenu(selectedCharacter.id);
-
-          //remove selected character
-          localStorage.setItem("selectedCharacter", null);
-
-          //update player info
-          showPlayerData();
+        //Remove on this click function from all other cells
+        for (const cell of possibleMoves) {
+          //$(cell).off();
+          $(cell)
+            .prop("onClick", null)
+            .off("click");
         }
+
+        //update character's moves left
+        let playerTroops = player.troops;
+
+        for (const troop of playerTroops) {
+          if (troop.id == selectedCharacter.id) {
+            troop.movesLeft -= cellDifference;
+          }
+        }
+
+        //save character memento to restory movesLeft later (on restoreMoves())
+        let troopFactory = new TroopFactory();
+        let templateCharacter = troopFactory.createCharacter(
+          selectedCharacter.type
+        );
+        templateCharacter.id = selectedCharacter.id;
+        careTaker.add(templateCharacter.saveMemento());
+
+        //refresh moves left
+        updateMovesLeft(cellDifference);
+
+        // localStorage.setItem(currentPlayer, JSON.stringify(player));
+        enterCastle();
+
+        //refresh board
+        refreshBoard();
+
+        //refresh castle menu
+        castleMenu();
+
+        //remove selected character
+        localStorage.setItem("selectedCharacter", null);
+
+        //update player info
+        showPlayerData();
+
+        // if desired cell is not home castle
       } // 1) if your selected player is a SPY
       // 2)if the cell you are moving into is an enemy castle
       //Enter enemy castle
@@ -1178,6 +1122,75 @@ let moveTroop = currentCell => {
         showPlayerData();
         //enemy castle menu
         enemyCastleMenu(enemyOwner, currentCell);
+      } else if (!isPlayerItem) {
+        $(currentCell).html(
+          getCurrentColumn($(currentCell).attr("cellNumber"))
+        );
+        $(currentCell).removeClass("playerItem");
+        $(currentCell).removeClass("currentPlayerItem");
+        $(currentCell).attr("owner", null);
+        $(currentCell).attr("troopId", null);
+        $(currentCell).attr("itemType", null);
+        $(currentCell).removeAttr("data-toggle", null);
+        $(currentCell).removeAttr("data-placement", null);
+        $(currentCell).removeAttr("data-html", null);
+        $(currentCell).removeAttr("title", null);
+        $(currentCell).removeAttr("data-original-title", null);
+
+        //Show on board
+        $(cell).html(selectedCharacter.sprite);
+        $(cell).addClass("playerItem");
+        $(cell).addClass("currentPlayerItem");
+        $(cell).attr("owner", currentPlayer);
+        $(cell).attr("troopId", selectedCharacter.id);
+        $(cell).attr("itemType", selectedCharacter.type);
+
+        //Clean board active moves
+        // removePossibleMoves();
+
+        //Remove on this click function from all other cells
+        for (const cell of possibleMoves) {
+          //$(cell).off();
+          $(cell)
+            .prop("onClick", null)
+            .off("click");
+        }
+
+        //check if desired cell has power up
+        checkPowerUp(cell, selectedCharacter);
+        checkGems(cell, selectedCharacter);
+
+        //update character's moves left
+        let playerTroops = player.troops;
+
+        for (const troop of playerTroops) {
+          if (troop.id == selectedCharacter.id) {
+            troop.movesLeft -= cellDifference;
+          }
+        }
+        localStorage.setItem(currentPlayer, JSON.stringify(player));
+
+        //save character memento to restory movesLeft later (on restoreMoves())
+        let troopFactory = new TroopFactory();
+        let templateCharacter = troopFactory.createCharacter(
+          selectedCharacter.type
+        );
+        templateCharacter.id = selectedCharacter.id;
+        careTaker.add(templateCharacter.saveMemento());
+
+        //refresh moves left
+        updateMovesLeft(cellDifference);
+
+        //refresh board
+        refreshBoard();
+
+        characterMenu(selectedCharacter.id);
+
+        //remove selected character
+        localStorage.setItem("selectedCharacter", null);
+
+        //update player info
+        showPlayerData();
       } else {
         callAlert("warning", "Woops ", "You cannot move into a player's item");
         //Remove on this click function from all other cells
