@@ -100,8 +100,3 @@ R//
 //R- mover atacar terminar
 //R atacr termonar
 //R mover terminar
-
-
-1. Cedula: 801290820
-2. IBAN: CR80012300929316732590
-3. Banco: Scotiabank
